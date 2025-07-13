@@ -1,0 +1,9 @@
+{
+  "NavLinks": {
+    "home": "Home",
+    "bookings": "Bookings",
+    "cabins": "Cabins",
+    "users": "Users",
+    "settings": "Settings"
+  }
+}

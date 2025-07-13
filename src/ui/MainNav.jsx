@@ -1,18 +1,28 @@
 import styled from "styled-components";
+import {
+  HiOutlineHome,
+  HiCalendarDateRange,
+  HiHomeModern,
+  HiOutlineUsers,
+  HiOutlineCog6Tooth,
+} from "react-icons/hi2";
 
+import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 const NavList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  margin: 1rem 0;
 `;
 
-const Link = styled.a`
+const StyledNavLink = styled(NavLink)`
   &:link,
   &:visited {
     display: flex;
     align-items: center;
     gap: 1.2rem;
-
+    user-select: none;
     color: var(--color-grey-600);
     font-size: 1.6rem;
     font-weight: 500;
@@ -44,3 +54,32 @@ const Link = styled.a`
     color: var(--color-brand-600);
   }
 `;
+
+export default function MainNav() {
+  const { t } = useTranslation();
+  const links = [
+    { path: "/", name: t("NavLinks.home"), icon: <HiOutlineHome /> },
+    {
+      path: "bookings",
+      name: t("NavLinks.bookings"),
+      icon: <HiCalendarDateRange />,
+    },
+    { path: "cabins", name: t("NavLinks.cabins"), icon: <HiHomeModern /> },
+    { path: "users", name: t("NavLinks.users"), icon: <HiOutlineUsers /> },
+    {
+      path: "settings",
+      name: t("NavLinks.settings"),
+      icon: <HiOutlineCog6Tooth />,
+    },
+  ];
+  return (
+    <NavList>
+      {links.map(({ path, name, icon }, index) => (
+        <StyledNavLink key={index} to={path}>
+          {icon}
+          {name}
+        </StyledNavLink>
+      ))}
+    </NavList>
+  );
+}
