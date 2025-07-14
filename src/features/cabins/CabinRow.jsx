@@ -1,5 +1,6 @@
 import styled from "styled-components";
-
+import { PiDotsThreeOutlineVertical } from "react-icons/pi";
+import { formatCurrency } from "../../utils/helpers";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
@@ -38,3 +39,17 @@ const Discount = styled.div`
   font-weight: 500;
   color: var(--color-green-700);
 `;
+
+export default function CabinRow({ cabin }) {
+  const { image: src, name, maxCapacity, regulerPrice, discount } = cabin;
+  return (
+    <TableRow>
+      <Img src={src} />
+      <Cabin>{name}</Cabin>
+      <p>Fits up to {maxCapacity} guests</p>
+      <Price>{formatCurrency(regulerPrice)}</Price>
+      <Discount>{formatCurrency(discount)}</Discount>
+      <PiDotsThreeOutlineVertical />
+    </TableRow>
+  );
+}

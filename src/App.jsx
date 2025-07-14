@@ -6,6 +6,8 @@ import {
 } from "react-router-dom";
 import GlobalStyles from "./styles/GlobalStyles";
 import { useTranslation } from "react-i18next";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 // Lazy load components
 const AppLayout = lazy(() => import("./ui/AppLayout"));
@@ -17,6 +19,14 @@ const Settings = lazy(() => import("./pages/Settings"));
 const Account = lazy(() => import("./pages/Account"));
 const Login = lazy(() => import("./pages/Login"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
+
+const queryCleint = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+    },
+  },
+});
 
 // Define routes
 const router = createBrowserRouter([
@@ -67,11 +77,13 @@ function App() {
   useEffect(() => {
     document.documentElement.dir = i18n.language === "ar" ? "rtl" : "ltr";
   }, [i18n.language]);
+
   return (
-    <>
+    <QueryClientProvider client={queryCleint}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <GlobalStyles />
       <RouterProvider router={router} />
-    </>
+    </QueryClientProvider>
   );
 }
 
