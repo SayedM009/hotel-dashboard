@@ -8,12 +8,14 @@ import GlobalStyles from "./styles/GlobalStyles";
 import { useTranslation } from "react-i18next";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
+import { Toaster } from "react-hot-toast";
 // Lazy load components
 const AppLayout = lazy(() => import("./ui/AppLayout"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Bookings = lazy(() => import("./pages/Bookings"));
 const Cabins = lazy(() => import("./pages/Cabins"));
+const CabinsTable = lazy(() => import("./features/cabins/CabinTable"));
+const CreateCabinForm = lazy(() => import("./features/cabins/CreateCabinForm"));
 const Users = lazy(() => import("./pages/Users"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Account = lazy(() => import("./pages/Account"));
@@ -23,7 +25,7 @@ const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 const queryCleint = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000,
+      staleTime: 0,
     },
   },
 });
@@ -54,6 +56,16 @@ const router = createBrowserRouter([
       {
         path: "cabins",
         element: <Cabins />,
+        children: [
+          {
+            index: true,
+            element: <CabinsTable />,
+          },
+          {
+            path: "addCabin",
+            element: <CreateCabinForm />,
+          },
+        ],
       },
       {
         path: "users",
@@ -83,6 +95,7 @@ function App() {
       <ReactQueryDevtools initialIsOpen={false} />
       <GlobalStyles />
       <RouterProvider router={router} />
+      <Toaster position="top-center" />
     </QueryClientProvider>
   );
 }

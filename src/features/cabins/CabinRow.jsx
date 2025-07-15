@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import { PiDotsThreeOutlineVertical } from "react-icons/pi";
 import { formatCurrency } from "../../utils/helpers";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deletCabin } from "../../services/apiCabins";
+import Button from "../../ui/Button";
+import toast from "react-hot-toast";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
@@ -40,8 +44,30 @@ const Discount = styled.div`
   color: var(--color-green-700);
 `;
 
-export default function CabinRow({ cabin }) {
-  const { image: src, name, maxCapacity, regulerPrice, discount } = cabin;
+export default function CabinRow({ cabin, index }) {
+  const {
+    id: cabinId,
+    image: src,
+    name,
+    maxCapacity,
+    regulerPrice,
+    discount,
+  } = cabin;
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: deletCabin,
+    onSuccess: () => {
+      toast.success(`${name} cabin has successfully deleted`, {
+        duration: 5000,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cabins"],
+      });
+    },
+    onError: (error) => toast.error(error),
+  });
   return (
     <TableRow>
       <Img src={src} />
@@ -49,7 +75,15 @@ export default function CabinRow({ cabin }) {
       <p>Fits up to {maxCapacity} guests</p>
       <Price>{formatCurrency(regulerPrice)}</Price>
       <Discount>{formatCurrency(discount)}</Discount>
-      <PiDotsThreeOutlineVertical />
+      <Button
+        size="small"
+        onClick={() => {
+          if (index === 0) return toast.error("Could not delete this cabin");
+          mutate(cabinId);
+        }}
+      >
+        Delete
+      </Button>
     </TableRow>
   );
 }

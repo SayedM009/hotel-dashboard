@@ -3,6 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import getCabins from "../../services/apiCabins";
 import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
+import Row from "../../ui/Row";
+import Heading from "../../ui/Heading";
+import Button from "../../ui/Button";
+import { Link, useLocation } from "react-router-dom";
 const Table = styled.div`
   border: 1px solid var(--color-grey-200);
 
@@ -27,34 +31,47 @@ const TableHeader = styled.header`
   padding: 1.6rem 2.4rem;
 `;
 
+const StyledLink = styled(Link)`
+  width: 100%;
+  display: block;
+`;
+
 export default function CabinTable() {
+  const location = useLocation();
   const {
     data: cabins,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["cabin"],
+    queryKey: ["cabins"],
     queryFn: getCabins,
   });
-
-  console.log(cabins);
 
   if (isLoading) <Spinner />;
   if (error) return <div>Somthing went wrong!</div>;
 
   return (
-    <Table role="table">
-      <TableHeader role="row">
-        <div></div>
-        <div>cabin</div>
-        <div>capacity</div>
-        <div>price</div>
-        <div>discount</div>
-        <div>actions</div>
-      </TableHeader>
-      {cabins?.map((cabin) => (
-        <CabinRow cabin={cabin} key={cabin.id} />
-      ))}
-    </Table>
+    <>
+      <Row type="horizontal">
+        <Heading as="h1">All cabins</Heading>
+        <p>Filter/Sort</p>
+      </Row>
+      <Table role="table">
+        <TableHeader role="row">
+          <div></div>
+          <div>cabin</div>
+          <div>capacity</div>
+          <div>price</div>
+          <div>discount</div>
+          <div>actions</div>
+        </TableHeader>
+        {cabins?.map((cabin, index) => (
+          <CabinRow cabin={cabin} key={cabin.id} index={index} />
+        ))}
+      </Table>
+      <StyledLink to={`addCabin${location.search}`}>
+        <Button style={{ width: "100%" }}>Add Cabin</Button>
+      </StyledLink>
+    </>
   );
 }
