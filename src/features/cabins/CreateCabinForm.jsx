@@ -4,49 +4,16 @@ import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
+import FormRow from "../../ui/FormRow";
 import Textarea from "../../ui/Textarea";
-import { PiArrowFatLeft } from "react-icons/pi";
+import { PiArrowFatLeft, PiArrowFatRight } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
-
-const FormRow = styled.div`
-  display: grid;
-  align-items: center;
-  grid-template-columns: 24rem 1fr 1.2fr;
-  gap: 2.4rem;
-
-  padding: 1.2rem 0;
-
-  &:first-child {
-    padding-top: 0;
-  }
-
-  &:last-child {
-    padding-bottom: 0;
-  }
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-
-  &:has(button) {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1.2rem;
-  }
-`;
-
-const Label = styled.label`
-  font-weight: 500;
-`;
-
-const Error = styled.span`
-  font-size: 1.4rem;
-  color: var(--color-red-700);
-`;
+import { PiPencilSimpleLine } from "react-icons/pi";
+import { useTranslation } from "react-i18next";
 
 const Icon = styled.div`
   font-size: 36px;
@@ -62,14 +29,16 @@ const Icon = styled.div`
 `;
 
 function CreateCabinForm() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, formState, getValues } = useForm();
+  const { name, description, maxCapacity, regulerPrice, discount } =
+    formState.errors;
   const queryClient = useQueryClient();
-
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: createCabin,
     onSuccess: () => {
-      toast.success("Cabin has added successfully");
+      toast.success(`${t("Pages.cabins.add_cabin_success")} `);
       queryClient.invalidateQueries({
         queryKey: ["cabins"],
       });
@@ -78,52 +47,79 @@ function CreateCabinForm() {
     },
     onError: (error) => toast.error(`${error}`),
   });
+
   function onSubmit(data) {
     mutate(data);
   }
+  console.log();
   return (
     <>
       <Icon onClick={() => navigate(-1)}>
-        <PiArrowFatLeft />
-        <h6>All Cabins</h6>
+        {i18n.language == "ar" ? <PiArrowFatRight /> : <PiArrowFatLeft />}
+        <h6>{t("Pages.cabins.all_cabins")}</h6>
       </Icon>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        <FormRow>
-          <Label htmlFor="name">Cabin name</Label>
-          <Input type="text" id="name" {...register("name")} />
-        </FormRow>
-
-        <FormRow>
-          <Label htmlFor="maxCapacity">Maximum capacity</Label>
-          <Input type="number" id="maxCapacity" {...register("maxCapacity")} />
-        </FormRow>
-
-        <FormRow>
-          <Label htmlFor="regulerPrice">Regular price</Label>
+        <FormRow label="name" error={name?.message}>
           <Input
-            type="number"
-            id="regulerPrice"
-            {...register("regulerPrice")}
+            type="text"
+            id="name"
+            {...register("name", {
+              required: t("Pages.cabins.cabin_name_required"),
+            })}
           />
         </FormRow>
 
-        <FormRow>
-          <Label htmlFor="discount">Discount</Label>
+        <FormRow label="maxCapacity" error={maxCapacity?.message}>
+          <Input
+            type="number"
+            id="maxCapacity"
+            {...register("maxCapacity", {
+              required: t("Pages.cabins.max_capacity_required"),
+              min: {
+                value: 1,
+                message: t("Pages.cabins.min_value"),
+              },
+            })}
+          />
+        </FormRow>
+
+        <FormRow label="regulerPrice" error={regulerPrice?.message}>
+          <Input
+            type="number"
+            id="regulerPrice"
+            {...register("regulerPrice", {
+              required: t("Pages.cabins.reguler_price_required"),
+              min: {
+                value: 1,
+                message: t("Pages.cabins.min_value"),
+              },
+            })}
+          />
+        </FormRow>
+
+        <FormRow label="discount" error={discount?.message}>
           <Input
             type="number"
             id="discount"
             defaultValue={0}
-            {...register("discount")}
+            {...register("discount", {
+              required: t("Pages.cabins.discount_required"),
+              validate: (value) =>
+                value < getValues().regulerPrice ||
+                value <= 0 ||
+                t("Pages.cabins.discount_less_than"),
+            })}
           />
         </FormRow>
 
-        <FormRow>
-          <Label htmlFor="description">Description for website</Label>
+        <FormRow label="description" error={description?.message}>
           <Textarea
             type="number"
             id="description"
             defaultValue=""
-            {...register("description")}
+            {...register("description", {
+              required: t("Pages.cabins.description_required"),
+            })}
           />
         </FormRow>
 
@@ -135,9 +131,12 @@ function CreateCabinForm() {
         <FormRow>
           {/* type is an HTML attribute! */}
           <Button variation="secondary" type="reset">
-            Cancel
+            {t("Pages.cabins.cancel")}
           </Button>
-          <Button variation="primary">Edit cabin</Button>
+          <Button variation="primary" disabled={isPending}>
+            <PiPencilSimpleLine />
+            {t("Pages.cabins.add_cabin")}
+          </Button>
         </FormRow>
       </Form>
     </>

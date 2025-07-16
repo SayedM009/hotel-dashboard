@@ -24,6 +24,10 @@ const variations = {
   primary: css`
     color: var(--color-brand-50);
     background-color: var(--color-brand-600);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
 
     &:hover {
       background-color: var(--color-brand-700);

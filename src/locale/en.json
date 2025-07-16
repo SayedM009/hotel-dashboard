@@ -5,5 +5,32 @@
     "cabins": "Cabins",
     "users": "Users",
     "settings": "Settings"
+  },
+  "Pages": {
+    "cabins": {
+      "all_cabins": "All cabins",
+      "cabin": "cabin",
+      "capacity": "capacity",
+      "price": "price",
+      "discount": "discount",
+      "actions": "actions",
+      "add_cabin": "Add cabin",
+      "delete": "delete",
+      "name": "name",
+      "maxCapacity": "Max capacity",
+      "regulerPrice": "ٌReguler Price",
+      "description": "Description",
+      "edit_cabin": "Edit cabin",
+      "cancel": "cancel",
+      "add_cabin_success": "Cabin has added successfully",
+      "delete_cabin_success": "Cabin has deleted successfully",
+      "cabin_name_required": "Cabin name is required",
+      "max_capacity_required": "Max capacity required",
+      "min_value": "lower value is 1",
+      "reguler_price_required": "Reguler price required",
+      "discount_required": "Discount required",
+      "discount_less_than": "should be smaller than price",
+      "description_required": "Description required"
+    }
   }
 }

@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Row from "./Row";
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
+import { PiTranslate } from "react-icons/pi";
 
 const StyledHeader = styled.div`
   background-color: var(--color-grey-0);
@@ -24,10 +25,17 @@ function LanguageSwitcher() {
   return (
     <div>
       {currentLanguage == "ar" && (
-        <Button onClick={() => i18n.changeLanguage("en")}>English</Button>
+        <Button onClick={() => i18n.changeLanguage("en")}>
+          <PiTranslate />
+          English
+        </Button>
       )}
       {currentLanguage == "en" && (
-        <Button onClick={() => i18n.changeLanguage("ar")}>العربية</Button>
+        <Button onClick={() => i18n.changeLanguage("ar")}>
+          {" "}
+          <PiTranslate />
+          العربية
+        </Button>
       )}
     </div>
   );

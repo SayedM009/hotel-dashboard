@@ -7,6 +7,9 @@ import Row from "../../ui/Row";
 import Heading from "../../ui/Heading";
 import Button from "../../ui/Button";
 import { Link, useLocation } from "react-router-dom";
+import { PiPlus } from "react-icons/pi";
+import { useTranslation } from "react-i18next";
+
 const Table = styled.div`
   border: 1px solid var(--color-grey-200);
 
@@ -37,6 +40,7 @@ const StyledLink = styled(Link)`
 `;
 
 export default function CabinTable() {
+  const { t } = useTranslation();
   const location = useLocation();
   const {
     data: cabins,
@@ -47,30 +51,35 @@ export default function CabinTable() {
     queryFn: getCabins,
   });
 
+  console.log(isLoading);
+
   if (isLoading) <Spinner />;
   if (error) return <div>Somthing went wrong!</div>;
 
   return (
     <>
       <Row type="horizontal">
-        <Heading as="h1">All cabins</Heading>
+        <Heading as="h1">{t("Pages.cabins.all_cabins")}</Heading>
         <p>Filter/Sort</p>
       </Row>
       <Table role="table">
         <TableHeader role="row">
           <div></div>
-          <div>cabin</div>
-          <div>capacity</div>
-          <div>price</div>
-          <div>discount</div>
-          <div>actions</div>
+          <div>{t("Pages.cabins.cabin")}</div>
+          <div>{t("Pages.cabins.capacity")}</div>
+          <div>{t("Pages.cabins.price")}</div>
+          <div>{t("Pages.cabins.discount")}</div>
+          <div>{t("Pages.cabins.actions")}</div>
         </TableHeader>
         {cabins?.map((cabin, index) => (
           <CabinRow cabin={cabin} key={cabin.id} index={index} />
         ))}
       </Table>
       <StyledLink to={`addCabin${location.search}`}>
-        <Button style={{ width: "100%" }}>Add Cabin</Button>
+        <Button style={{ width: "100%" }}>
+          <PiPlus />
+          {t("Pages.cabins.add_cabin")}
+        </Button>
       </StyledLink>
     </>
   );

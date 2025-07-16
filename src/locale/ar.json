@@ -5,5 +5,32 @@
     "cabins": "الغرف",
     "users": "المستخدمين",
     "settings": "الإعدادات"
+  },
+  "Pages": {
+    "cabins": {
+      "all_cabins": "جميع الغرف",
+      "cabin": "غرفة",
+      "capacity": "العدد",
+      "price": "السعر",
+      "discount": "الخصم",
+      "actions": "العمليات",
+      "add_cabin": "إضافة غرفة",
+      "delete": "حذف",
+      "name": "الإسم",
+      "maxCapacity": "أقصى عدد",
+      "regulerPrice": "السعر",
+      "description": "الوصف",
+      "edit_cabin": "تعديل الغرفة",
+      "cancel": "الغاء",
+      "add_cabin_success": "تم إضافة الفرفة بنجاح",
+      "delete_cabin_success": "تم حذف الفرفة بنجاح",
+      "cabin_name_required": "إسم الغرفة مطلوب",
+      "max_capacity_required": "أقصى عدد مطلوب",
+      "min_value": "أقل قيمة هى 1",
+      "reguler_price_required": " السعر مطلوب",
+      "discount_required": " الخصم مطلوب",
+      "discount_less_than": "لابد أن يكون اقل من السعر",
+      "description_required": " الوصف مطلوب"
+    }
   }
 }

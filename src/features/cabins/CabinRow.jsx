@@ -1,10 +1,12 @@
 import styled from "styled-components";
-import { PiDotsThreeOutlineVertical } from "react-icons/pi";
 import { formatCurrency } from "../../utils/helpers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deletCabin } from "../../services/apiCabins";
 import Button from "../../ui/Button";
 import toast from "react-hot-toast";
+import { PiTrash } from "react-icons/pi";
+import { useTranslation } from "react-i18next";
+
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
@@ -45,6 +47,7 @@ const Discount = styled.div`
 `;
 
 export default function CabinRow({ cabin, index }) {
+  const { t, i18n } = useTranslation();
   const {
     id: cabinId,
     image: src,
@@ -56,10 +59,10 @@ export default function CabinRow({ cabin, index }) {
 
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: deletCabin,
     onSuccess: () => {
-      toast.success(`${name} cabin has successfully deleted`, {
+      toast.success(`${name} ${t("Pages.cabins.delete_cabin_success")}`, {
         duration: 5000,
       });
       queryClient.invalidateQueries({
@@ -76,13 +79,15 @@ export default function CabinRow({ cabin, index }) {
       <Price>{formatCurrency(regulerPrice)}</Price>
       <Discount>{formatCurrency(discount)}</Discount>
       <Button
-        size="small"
+        size="medium"
         onClick={() => {
           if (index === 0) return toast.error("Could not delete this cabin");
           mutate(cabinId);
         }}
+        disabled={isPending}
       >
-        Delete
+        <PiTrash />
+        {t("Pages.cabins.delete")}
       </Button>
     </TableRow>
   );
