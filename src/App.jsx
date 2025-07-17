@@ -65,6 +65,10 @@ const router = createBrowserRouter([
             path: "addCabin",
             element: <CreateCabinForm />,
           },
+          {
+            path: "editCabin",
+            element: <CreateCabinForm />,
+          },
         ],
       },
       {
@@ -88,6 +92,13 @@ function App() {
 
   useEffect(() => {
     document.documentElement.dir = i18n.language === "ar" ? "rtl" : "ltr";
+    if (i18n.language === "ar") {
+      document.documentElement.classList.add("ar-app");
+      document.documentElement.classList.remove("en-app");
+    } else {
+      document.documentElement.classList.add("en-app");
+      document.documentElement.classList.remove("ar-app");
+    }
   }, [i18n.language]);
 
   return (

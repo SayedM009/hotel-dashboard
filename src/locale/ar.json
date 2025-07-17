@@ -20,9 +20,11 @@
       "maxCapacity": "أقصى عدد",
       "regulerPrice": "السعر",
       "description": "الوصف",
-      "edit_cabin": "تعديل الغرفة",
+      "edit_cabin": "تعديل ",
       "cancel": "الغاء",
+      "image": "صورة",
       "add_cabin_success": "تم إضافة الفرفة بنجاح",
+      "edit_cabin_success": "تم تعديل الفرفة بنجاح",
       "delete_cabin_success": "تم حذف الفرفة بنجاح",
       "cabin_name_required": "إسم الغرفة مطلوب",
       "max_capacity_required": "أقصى عدد مطلوب",
@@ -30,7 +32,8 @@
       "reguler_price_required": " السعر مطلوب",
       "discount_required": " الخصم مطلوب",
       "discount_less_than": "لابد أن يكون اقل من السعر",
-      "description_required": " الوصف مطلوب"
+      "description_required": " الوصف مطلوب",
+      "image_required": "الصورة مطلوبة"
     }
   }
 }

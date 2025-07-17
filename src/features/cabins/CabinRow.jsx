@@ -1,11 +1,15 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deletCabin } from "../../services/apiCabins";
 import Button from "../../ui/Button";
 import toast from "react-hot-toast";
 import { PiTrash } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { PiPencilSimpleLine } from "react-icons/pi";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import useDeleteCabin from "./useDeleteCabin";
 
 const TableRow = styled.div`
   display: grid;
@@ -46,7 +50,14 @@ const Discount = styled.div`
   color: var(--color-green-700);
 `;
 
+const Actions = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
 export default function CabinRow({ cabin, index }) {
+  const [isImgLoading, setIsImageLoading] = useState(true);
   const { t, i18n } = useTranslation();
   const {
     id: cabinId,
@@ -57,38 +68,41 @@ export default function CabinRow({ cabin, index }) {
     discount,
   } = cabin;
 
-  const queryClient = useQueryClient();
+  const { deleteCabin, isPending } = useDeleteCabin(name);
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: deletCabin,
-    onSuccess: () => {
-      toast.success(`${name} ${t("Pages.cabins.delete_cabin_success")}`, {
-        duration: 5000,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-    },
-    onError: (error) => toast.error(error),
-  });
   return (
     <TableRow>
-      <Img src={src} />
+      <div>
+        <Img src={src} onLoad={() => setIsImageLoading(false)} />
+        {isImgLoading && <Skeleton height={60} width={100} />}
+      </div>
       <Cabin>{name}</Cabin>
       <p>Fits up to {maxCapacity} guests</p>
       <Price>{formatCurrency(regulerPrice)}</Price>
       <Discount>{formatCurrency(discount)}</Discount>
-      <Button
-        size="medium"
-        onClick={() => {
-          if (index === 0) return toast.error("Could not delete this cabin");
-          mutate(cabinId);
-        }}
-        disabled={isPending}
-      >
-        <PiTrash />
-        {t("Pages.cabins.delete")}
-      </Button>
+      <Actions>
+        <Button
+          size="large"
+          onClick={() => {
+            if (index === 0) return toast.error("Could not delete this cabin");
+            deleteCabin(cabinId);
+          }}
+          disabled={isPending}
+        >
+          <PiTrash />
+          {t("Pages.cabins.delete")}
+        </Button>
+        <Link
+          to={`editCabin?type=edit&cabin=${JSON.stringify(cabin)}`}
+          state={JSON.stringify(cabin)}
+          style={{ width: "100%", display: "block" }}
+        >
+          <Button size="medium">
+            <PiPencilSimpleLine />
+            {t("Pages.cabins.edit_cabin")}
+          </Button>
+        </Link>
+      </Actions>
     </TableRow>
   );
 }

@@ -1,17 +1,16 @@
 import styled from "styled-components";
-
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import FormRow from "../../ui/FormRow";
 import Textarea from "../../ui/Textarea";
-import { PiArrowFatLeft, PiArrowFatRight } from "react-icons/pi";
-import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { PiArrowFatLeft, PiArrowFatRight, PiPlus } from "react-icons/pi";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createCabin } from "../../services/apiCabins";
-import toast from "react-hot-toast";
+import { createEditCabin } from "../../services/apiCabins";
 import { PiPencilSimpleLine } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
@@ -29,16 +28,33 @@ const Icon = styled.div`
 `;
 
 function CreateCabinForm() {
-  const { t, i18n } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const edit = searchParams.get("type");
+  const loaction = useLocation();
+  const cabinData = location ? JSON.parse(loaction.state) : null;
   const navigate = useNavigate();
-  const { register, handleSubmit, reset, formState, getValues } = useForm();
-  const { name, description, maxCapacity, regulerPrice, discount } =
+
+  const { t, i18n } = useTranslation();
+
+  const { register, handleSubmit, formState, getValues, reset } = useForm({
+    defaultValues: cabinData ? cabinData : {},
+  });
+  const { name, description, maxCapacity, regulerPrice, discount, image } =
     formState.errors;
+
   const queryClient = useQueryClient();
-  const { mutate, isPending } = useMutation({
-    mutationFn: createCabin,
+
+  const { mutate: createEdit, isPending } = useMutation({
+    mutationFn: (data) => {
+      if (edit) return createEditCabin(data, cabinData.id);
+      if (!edit) return createEditCabin(data);
+    },
     onSuccess: () => {
-      toast.success(`${t("Pages.cabins.add_cabin_success")} `);
+      toast.success(
+        edit
+          ? `${t("Pages.cabins.edit_cabin_success")}`
+          : `${t("Pages.cabins.add_cabin_success")}`
+      );
       queryClient.invalidateQueries({
         queryKey: ["cabins"],
       });
@@ -49,9 +65,9 @@ function CreateCabinForm() {
   });
 
   function onSubmit(data) {
-    mutate(data);
+    createEdit(data);
   }
-  console.log();
+
   return (
     <>
       <Icon onClick={() => navigate(-1)}>
@@ -101,7 +117,7 @@ function CreateCabinForm() {
           <Input
             type="number"
             id="discount"
-            defaultValue={0}
+            defaultValue="0"
             {...register("discount", {
               required: t("Pages.cabins.discount_required"),
               validate: (value) =>
@@ -116,17 +132,21 @@ function CreateCabinForm() {
           <Textarea
             type="number"
             id="description"
-            defaultValue=""
             {...register("description", {
               required: t("Pages.cabins.description_required"),
             })}
           />
         </FormRow>
 
-        {/* <FormRow>
-          <Label htmlFor="image">Cabin photo</Label>
-          <FileInput id="image" accept="image/*" />
-        </FormRow> */}
+        <FormRow label="image" error={image?.message}>
+          <FileInput
+            id="image"
+            accept="image/*"
+            {...register("image", {
+              required: location ? false : t("Pages.cabins.image_required"),
+            })}
+          />
+        </FormRow>
 
         <FormRow>
           {/* type is an HTML attribute! */}
@@ -134,8 +154,18 @@ function CreateCabinForm() {
             {t("Pages.cabins.cancel")}
           </Button>
           <Button variation="primary" disabled={isPending}>
-            <PiPencilSimpleLine />
-            {t("Pages.cabins.add_cabin")}
+            {edit && (
+              <>
+                <PiPencilSimpleLine />
+                {t("Pages.cabins.edit_cabin")}
+              </>
+            )}
+            {!edit && (
+              <>
+                <PiPlus />
+                {t("Pages.cabins.add_cabin")}
+              </>
+            )}
           </Button>
         </FormRow>
       </Form>

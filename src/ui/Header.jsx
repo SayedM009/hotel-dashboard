@@ -4,8 +4,10 @@ import Button from "./Button";
 import { useTranslation } from "react-i18next";
 import { PiTranslate } from "react-icons/pi";
 
-const StyledHeader = styled.div`
+const StyledHeader = styled.header`
   background-color: var(--color-grey-0);
+  padding: 0.5rem 1.5rem;
+  border-bottom: 1px solid var(--color-brand-100);
 `;
 export default function Header() {
   return (

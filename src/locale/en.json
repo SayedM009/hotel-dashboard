@@ -20,9 +20,11 @@
       "maxCapacity": "Max capacity",
       "regulerPrice": "ٌReguler Price",
       "description": "Description",
-      "edit_cabin": "Edit cabin",
+      "edit_cabin": "Edit",
       "cancel": "cancel",
+      "image": "image",
       "add_cabin_success": "Cabin has added successfully",
+      "edit_cabin_success": "Cabin has edited successfully",
       "delete_cabin_success": "Cabin has deleted successfully",
       "cabin_name_required": "Cabin name is required",
       "max_capacity_required": "Max capacity required",
@@ -30,7 +32,8 @@
       "reguler_price_required": "Reguler price required",
       "discount_required": "Discount required",
       "discount_less_than": "should be smaller than price",
-      "description_required": "Description required"
+      "description_required": "Description required",
+      "image_required": "Image required"
     }
   }
 }

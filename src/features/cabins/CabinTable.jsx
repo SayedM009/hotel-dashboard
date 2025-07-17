@@ -55,7 +55,6 @@ export default function CabinTable() {
 
   if (isLoading) <Spinner />;
   if (error) return <div>Somthing went wrong!</div>;
-
   return (
     <>
       <Row type="horizontal">
