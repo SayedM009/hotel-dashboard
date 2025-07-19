@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
 import Button from "../../ui/Button";
 import toast from "react-hot-toast";
-import { PiTrash } from "react-icons/pi";
+import { PiCopySimple, PiDownload, PiTrash } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -10,6 +10,9 @@ import { PiPencilSimpleLine } from "react-icons/pi";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import useDeleteCabin from "./useDeleteCabin";
+import useCreateEditCabin from "./useCreateEditCabin";
+import { useMutation } from "@tanstack/react-query";
+import { downLoadImage } from "../../services/apiCabins";
 
 const TableRow = styled.div`
   display: grid;
@@ -37,6 +40,10 @@ const Cabin = styled.div`
   font-weight: 600;
   color: var(--color-grey-600);
   font-family: "Sono";
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `;
 
 const Price = styled.div`
@@ -52,7 +59,6 @@ const Discount = styled.div`
 
 const Actions = styled.div`
   display: flex;
-  flex-direction: column;
   gap: 1rem;
 `;
 
@@ -69,7 +75,16 @@ export default function CabinRow({ cabin, index }) {
   } = cabin;
 
   const { deleteCabin, isPending } = useDeleteCabin(name);
-
+  const { createEdit, isPending: isPendingDublicating } = useCreateEditCabin();
+  const { isPending: isDownloading, mutate } = useMutation({
+    mutationFn: downLoadImage,
+    onSuccess: () => {
+      toast.success("image downloaded successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
   return (
     <TableRow>
       <div>
@@ -83,6 +98,7 @@ export default function CabinRow({ cabin, index }) {
       <Actions>
         <Button
           size="large"
+          title={t("Pages.cabins.delete")}
           onClick={() => {
             if (index === 0) return toast.error("Could not delete this cabin");
             deleteCabin(cabinId);
@@ -90,18 +106,47 @@ export default function CabinRow({ cabin, index }) {
           disabled={isPending}
         >
           <PiTrash />
-          {t("Pages.cabins.delete")}
+          {/*  */}
         </Button>
         <Link
           to={`editCabin?type=edit&cabin=${JSON.stringify(cabin)}`}
           state={JSON.stringify(cabin)}
           style={{ width: "100%", display: "block" }}
         >
-          <Button size="medium">
+          <Button size="large" title={t("Pages.cabins.edit_cabin")}>
             <PiPencilSimpleLine />
-            {t("Pages.cabins.edit_cabin")}
           </Button>
         </Link>
+        <Button
+          title={t("Pages.cabins.duplicate")}
+          size="large"
+          onClick={() => {
+            createEdit(
+              {
+                image: src,
+                name: `Copy of ${name}`,
+                maxCapacity,
+                regulerPrice,
+                discount,
+              },
+              cabinId
+            );
+          }}
+          disabled={isPendingDublicating}
+        >
+          {/* Duplicate */}
+          <PiCopySimple />
+        </Button>
+        <Button
+          title={t("Pages.cabins.duplicate")}
+          size="large"
+          onClick={() => {
+            mutate(src);
+          }}
+          disabled={isPendingDublicating}
+        >
+          <PiDownload />
+        </Button>
       </Actions>
     </TableRow>
   );

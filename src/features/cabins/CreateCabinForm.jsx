@@ -5,12 +5,10 @@ import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import FormRow from "../../ui/FormRow";
 import Textarea from "../../ui/Textarea";
-import toast from "react-hot-toast";
+import useCreateEditCabin from "./useCreateEditCabin";
 import { PiArrowFatLeft, PiArrowFatRight, PiPlus } from "react-icons/pi";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createEditCabin } from "../../services/apiCabins";
 import { PiPencilSimpleLine } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
@@ -33,36 +31,13 @@ function CreateCabinForm() {
   const loaction = useLocation();
   const cabinData = location ? JSON.parse(loaction.state) : null;
   const navigate = useNavigate();
-
   const { t, i18n } = useTranslation();
-
-  const { register, handleSubmit, formState, getValues, reset } = useForm({
+  const { register, handleSubmit, formState, getValues } = useForm({
     defaultValues: cabinData ? cabinData : {},
   });
   const { name, description, maxCapacity, regulerPrice, discount, image } =
     formState.errors;
-
-  const queryClient = useQueryClient();
-
-  const { mutate: createEdit, isPending } = useMutation({
-    mutationFn: (data) => {
-      if (edit) return createEditCabin(data, cabinData.id);
-      if (!edit) return createEditCabin(data);
-    },
-    onSuccess: () => {
-      toast.success(
-        edit
-          ? `${t("Pages.cabins.edit_cabin_success")}`
-          : `${t("Pages.cabins.add_cabin_success")}`
-      );
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      reset();
-      navigate(-1);
-    },
-    onError: (error) => toast.error(`${error}`),
-  });
+  const { createEdit, isPending } = useCreateEditCabin(cabinData, edit);
 
   function onSubmit(data) {
     createEdit(data);

@@ -1,15 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createEditCabin } from "../../services/apiCabins";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 function useCreateEditCabin(cabinData, edit) {
   const { t } = useTranslation();
-  const { reset } = useForm();
   const queryClient = useQueryClient();
-
+  const navigate = useNavigate();
   const { mutate: createEdit, isPending } = useMutation({
     mutationFn: (data) => {
       if (edit) return createEditCabin(data, cabinData.id);
@@ -24,8 +22,7 @@ function useCreateEditCabin(cabinData, edit) {
       queryClient.invalidateQueries({
         queryKey: ["cabins"],
       });
-      reset();
-      Navigate(-1);
+      navigate("/cabins");
     },
     onError: (error) => toast.error(`${error}`),
   });

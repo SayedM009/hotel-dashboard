@@ -16,6 +16,7 @@
       "actions": "actions",
       "add_cabin": "Add cabin",
       "delete": "delete",
+      "duplicate": "duplicate",
       "name": "name",
       "maxCapacity": "Max capacity",
       "regulerPrice": "ٌReguler Price",
@@ -33,7 +34,11 @@
       "discount_required": "Discount required",
       "discount_less_than": "should be smaller than price",
       "description_required": "Description required",
-      "image_required": "Image required"
+      "image_required": "Image required",
+      "minBookingLength": "Min Booking Length",
+      "maxBookingLength": "Max Booking Length",
+      "maxGeustsPerBooking": "Max Geusts Per Booking",
+      "breakfastPrice": "Breakfast Price"
     }
   }
 }

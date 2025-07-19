@@ -23,17 +23,14 @@ export async function deleteCabinFn(id) {
 }
 
 export async function createEditCabin(newCabin, id) {
-  const hasImage = Object.keys(newCabin.image)
-    ? false
-    : newCabin?.image?.startsWith("https://tqawvmzchgqpgyarqnmq.supabase.co");
-
   const imageName = `${Math.random()}-${newCabin.image[0].name}`.replaceAll(
     "/",
     ""
   );
-  const imagePath = hasImage
-    ? newCabin.image
-    : `https://tqawvmzchgqpgyarqnmq.supabase.co/storage/v1/object/public/cabin-images/${imageName}`;
+  const imagePath =
+    typeof newCabin.image !== "object"
+      ? newCabin.image
+      : `https://tqawvmzchgqpgyarqnmq.supabase.co/storage/v1/object/public/cabin-images/${imageName}`;
 
   let query = supabase.from("cabins");
 
@@ -56,4 +53,31 @@ export async function createEditCabin(newCabin, id) {
   }
 
   return cabin;
+}
+
+export async function downLoadImage(imgURL) {
+  const path = imgURL.replace(
+    "https://tqawvmzchgqpgyarqnmq.supabase.co/storage/v1/object/public/cabin-images/",
+    ""
+  );
+
+  const { data, error } = await supabase.storage
+    .from("cabin-images")
+    .download(path);
+
+  if (error) {
+    console.error("Download error:", error);
+    throw error;
+  }
+
+  const blob = data;
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = path.split("/").pop();
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  return data;
 }

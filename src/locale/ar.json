@@ -17,6 +17,7 @@
       "add_cabin": "إضافة غرفة",
       "delete": "حذف",
       "name": "الإسم",
+      "duplicate": "نسخة جديدة",
       "maxCapacity": "أقصى عدد",
       "regulerPrice": "السعر",
       "description": "الوصف",
@@ -33,7 +34,11 @@
       "discount_required": " الخصم مطلوب",
       "discount_less_than": "لابد أن يكون اقل من السعر",
       "description_required": " الوصف مطلوب",
-      "image_required": "الصورة مطلوبة"
+      "image_required": "الصورة مطلوبة",
+      "minBookingLength": "أقل عدد ليال",
+      "maxBookingLength": "أقصى عدد ليال",
+      "maxGeustsPerBooking": "أقصى عدد للنزلاء",
+      "breakfastPrice": "سعر الفطار"
     }
   }
 }
