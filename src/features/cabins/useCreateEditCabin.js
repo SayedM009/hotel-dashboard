@@ -13,12 +13,17 @@ function useCreateEditCabin(cabinData, edit) {
       if (edit) return createEditCabin(data, cabinData.id);
       if (!edit) return createEditCabin(data);
     },
-    onSuccess: () => {
+    onSuccess: (updatedCabin) => {
       toast.success(
         edit
           ? `${t("Pages.cabins.edit_cabin_success")}`
           : `${t("Pages.cabins.add_cabin_success")}`
       );
+      queryClient.setQueryData(["cabins"], (oldCabins) => {
+        return oldCabins.map((cabin) =>
+          cabin.id === updatedCabin.id ? updatedCabin : cabin
+        );
+      });
       queryClient.invalidateQueries({
         queryKey: ["cabins"],
       });
