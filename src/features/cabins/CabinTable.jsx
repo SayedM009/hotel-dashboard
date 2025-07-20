@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import { useQuery } from "@tanstack/react-query";
-import getCabins from "../../services/apiCabins";
 import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
 import Row from "../../ui/Row";
 import Heading from "../../ui/Heading";
 import Button from "../../ui/Button";
+import toast from "react-hot-toast";
+import useGetCabins from "./useGetCabins";
 import { Link, useLocation } from "react-router-dom";
 import { PiPlus } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
@@ -21,7 +21,7 @@ const Table = styled.div`
 
 const TableHeader = styled.header`
   display: grid;
-  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
+  grid-template-columns: 0.5fr 1fr 2fr 1.5fr 1fr 1fr 2fr;
   column-gap: 2.4rem;
   align-items: center;
 
@@ -42,26 +42,25 @@ const StyledLink = styled(Link)`
 export default function CabinTable() {
   const { t } = useTranslation();
   const location = useLocation();
-  const {
-    data: cabins,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["cabins"],
-    queryFn: getCabins,
-  });
+  const { cabins, isLoading, isFetching, error, refetch } = useGetCabins();
 
-  if (isLoading) <Spinner />;
-  if (error) return <div>Somthing went wrong!</div>;
+  {
+    isFetching && !isLoading && <Spinner />;
+  }
+  if (error) return <div>Somthing went wrong!?</div>;
   return (
     <>
       <Row type="horizontal">
-        <Heading as="h1">{t("Pages.cabins.all_cabins")}</Heading>
+        <div>
+          <Heading as="h1">{t("Pages.cabins.all_cabins")}</Heading>
+          Count : {cabins.length}
+        </div>
         <p>Filter/Sort</p>
       </Row>
       <Table role="table">
         <TableHeader role="row">
-          <div></div>
+          <div>Id No.</div>
+          <div>Image</div>
           <div>{t("Pages.cabins.cabin")}</div>
           <div>{t("Pages.cabins.capacity")}</div>
           <div>{t("Pages.cabins.price")}</div>
@@ -78,6 +77,15 @@ export default function CabinTable() {
           {t("Pages.cabins.add_cabin")}
         </Button>
       </StyledLink>
+      <Button
+        size="medium"
+        onClick={async () => {
+          await refetch();
+          toast.success("Cabins loaded");
+        }}
+      >
+        Refetch Cabins
+      </Button>
     </>
   );
 }

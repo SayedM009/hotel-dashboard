@@ -23,7 +23,8 @@ function UpdateSettingsForm() {
     updateSettings({ [key]: value });
   }
 
-  if (isPending) <Spinner />;
+  if (isPending || isLoading) return <Spinner />;
+  if (error) return <div>Somthing went wrong</div>;
   return (
     <Form>
       <FormRow label="minBookingLength">

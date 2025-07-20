@@ -16,7 +16,7 @@ import { downLoadImage } from "../../services/apiCabins";
 
 const TableRow = styled.div`
   display: grid;
-  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
+  grid-template-columns: 0.5fr 1fr 2fr 1.5fr 1fr 1fr 2fr;
   column-gap: 2.4rem;
   align-items: center;
   padding: 1.4rem 2.4rem;
@@ -62,6 +62,18 @@ const Actions = styled.div`
   gap: 1rem;
 `;
 
+const ImageBox = styled.div`
+  position: relative;
+  width: fit-content;
+`;
+
+const SkeletonBox = styled.div`
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 10px);
+  transform: translate(-50%, -50%);
+`;
+
 export default function CabinRow({ cabin, index }) {
   const [isImgLoading, setIsImageLoading] = useState(true);
   const { t, i18n } = useTranslation();
@@ -87,10 +99,15 @@ export default function CabinRow({ cabin, index }) {
   });
   return (
     <TableRow>
-      <div>
+      <div>{cabinId}</div>
+      <ImageBox>
         <Img src={src} onLoad={() => setIsImageLoading(false)} />
-        {isImgLoading && <Skeleton height={60} width={100} />}
-      </div>
+        {isImgLoading && (
+          <SkeletonBox>
+            <Skeleton height={70} width={100} />
+          </SkeletonBox>
+        )}
+      </ImageBox>
       <Cabin>{name}</Cabin>
       <p>Fits up to {maxCapacity} guests</p>
       <Price>{formatCurrency(regulerPrice)}</Price>

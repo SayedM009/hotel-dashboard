@@ -9,6 +9,8 @@ import {
 
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
+import getCabins from "../services/apiCabins";
 const NavList = styled.ul`
   display: flex;
   flex-direction: column;
@@ -72,14 +74,31 @@ export default function MainNav() {
       icon: <HiOutlineCog6Tooth />,
     },
   ];
+
+  const queryClient = useQueryClient();
+
+  async function handleOver() {
+    await await queryClient.prefetchQuery({
+      queryKey: ["cabins"],
+      queryFn: getCabins,
+    });
+  }
+
   return (
     <NavList>
-      {links.map(({ path, name, icon }, index) => (
-        <StyledNavLink key={index} to={path}>
-          {icon}
-          {name}
-        </StyledNavLink>
-      ))}
+      {links.map(({ path, name, icon }, index) => {
+        return path === "cabins" ? (
+          <StyledNavLink key={index} to={path} onMouseOver={handleOver}>
+            {icon}
+            {name}
+          </StyledNavLink>
+        ) : (
+          <StyledNavLink key={index} to={path}>
+            {icon}
+            {name}
+          </StyledNavLink>
+        );
+      })}
     </NavList>
   );
 }

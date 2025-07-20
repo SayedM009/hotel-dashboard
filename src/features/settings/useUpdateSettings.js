@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import React from "react";
 import { updateSettingAPI } from "../../services/apiSettings";
 import toast from "react-hot-toast";
 
@@ -11,7 +10,10 @@ export default function useUpdateSettings() {
       toast.success("Settings has updated");
       queryClient.invalidateQueries({ queryKey: ["settings"] });
     },
-    onError: (error) => toast.error(error),
+    onError: (error) => {
+      toast.error(error.message);
+      console.error(error);
+    },
   });
   return { isPending, updateSettings };
 }

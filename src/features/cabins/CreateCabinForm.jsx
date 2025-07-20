@@ -37,7 +37,7 @@ function CreateCabinForm() {
   });
   const { name, description, maxCapacity, regulerPrice, discount, image } =
     formState.errors;
-  const { createEdit, isPending } = useCreateEditCabin(cabinData, edit);
+  const { createEdit, isPending } = useCreateEditCabin(edit);
 
   function onSubmit(data) {
     createEdit(data);
