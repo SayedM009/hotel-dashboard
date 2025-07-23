@@ -5,7 +5,9 @@ import Row from "../../ui/Row";
 import Heading from "../../ui/Heading";
 import Button from "../../ui/Button";
 import toast from "react-hot-toast";
+import Modal from "../../ui/Modal";
 import useGetCabins from "./useGetCabins";
+import CreateCabinForm from "./CreateCabinForm";
 import { Link, useLocation } from "react-router-dom";
 import { PiPlus } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
@@ -53,7 +55,7 @@ export default function CabinTable() {
       <Row type="horizontal">
         <div>
           <Heading as="h1">{t("Pages.cabins.all_cabins")}</Heading>
-          Count : {cabins.length}
+          Count : {cabins && cabins.length}
         </div>
         <p>Filter/Sort</p>
       </Row>
@@ -71,13 +73,13 @@ export default function CabinTable() {
           <CabinRow cabin={cabin} key={cabin.id} index={index} />
         ))}
       </Table>
-      <StyledLink to={`addCabin${location.search}`}>
+      {/* <StyledLink to={`addCabin${location.search}`}>
         <Button style={{ width: "100%" }}>
           <PiPlus />
           {t("Pages.cabins.add_cabin")}
         </Button>
-      </StyledLink>
-      <Button
+      </StyledLink> */}
+      {/* <Button
         size="medium"
         onClick={async () => {
           await refetch();
@@ -85,7 +87,41 @@ export default function CabinTable() {
         }}
       >
         Refetch Cabins
-      </Button>
+      </Button> */}
+      <Modal>
+        <Modal.Open opens="cabin-form">
+          <Button>
+            <PiPlus />
+            {t("Pages.cabins.add_cabin")}
+          </Button>
+        </Modal.Open>
+        <Modal.Window name="cabin-form">
+          <CreateCabinForm />
+        </Modal.Window>
+
+        <Modal.Open opens="table">
+          <Button>
+            <PiPlus />
+            Show Table
+          </Button>
+        </Modal.Open>
+        <Modal.Window name="table">
+          <Table role="table">
+            <TableHeader role="row">
+              <div>Id No.</div>
+              <div>Image</div>
+              <div>{t("Pages.cabins.cabin")}</div>
+              <div>{t("Pages.cabins.capacity")}</div>
+              <div>{t("Pages.cabins.price")}</div>
+              <div>{t("Pages.cabins.discount")}</div>
+              <div>{t("Pages.cabins.actions")}</div>
+            </TableHeader>
+            {cabins?.map((cabin, index) => (
+              <CabinRow cabin={cabin} key={cabin.id} index={index} />
+            ))}
+          </Table>
+        </Modal.Window>
+      </Modal>
     </>
   );
 }

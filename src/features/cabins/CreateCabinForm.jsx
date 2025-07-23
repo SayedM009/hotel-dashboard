@@ -25,11 +25,12 @@ const Icon = styled.div`
   }
 `;
 
-function CreateCabinForm() {
+function CreateCabinForm({ onCloseModal }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const edit = searchParams.get("type");
   const loaction = useLocation();
   const cabinData = location ? JSON.parse(loaction.state) : null;
+  console.log(cabinData);
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { register, handleSubmit, formState, getValues } = useForm({
@@ -40,12 +41,21 @@ function CreateCabinForm() {
   const { createEdit, isPending } = useCreateEditCabin(edit);
 
   function onSubmit(data) {
-    createEdit(data);
+    createEdit(data, {
+      onSuccess: () => {
+        onCloseModal?.();
+      },
+    });
   }
 
   return (
     <>
-      <Icon onClick={() => navigate(-1)}>
+      <Icon
+        onClick={() => {
+          navigate("/cabins");
+          onCloseModal?.();
+        }}
+      >
         {i18n.language == "ar" ? <PiArrowFatRight /> : <PiArrowFatLeft />}
         <h6>{t("Pages.cabins.all_cabins")}</h6>
       </Icon>
@@ -125,7 +135,11 @@ function CreateCabinForm() {
 
         <FormRow>
           {/* type is an HTML attribute! */}
-          <Button variation="secondary" type="reset">
+          <Button
+            variation="secondary"
+            type="reset"
+            onClick={() => onCloseModal?.()}
+          >
             {t("Pages.cabins.cancel")}
           </Button>
           <Button variation="primary" disabled={isPending}>

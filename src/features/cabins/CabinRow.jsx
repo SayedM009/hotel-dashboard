@@ -7,12 +7,14 @@ import { useTranslation } from "react-i18next";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { PiPencilSimpleLine } from "react-icons/pi";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import useDeleteCabin from "./useDeleteCabin";
 import useCreateEditCabin from "./useCreateEditCabin";
 import { useMutation } from "@tanstack/react-query";
 import { downLoadImage } from "../../services/apiCabins";
+import Modal from "../../ui/Modal";
+import CreateCabinForm from "./CreateCabinForm";
 
 const TableRow = styled.div`
   display: grid;
@@ -85,7 +87,7 @@ export default function CabinRow({ cabin, index }) {
     regulerPrice,
     discount,
   } = cabin;
-
+  const navigate = useNavigate();
   const { deleteCabin, isPending } = useDeleteCabin(name);
   const { createEdit, isPending: isPendingDublicating } = useCreateEditCabin();
   const { isPending: isDownloading, mutate } = useMutation({
@@ -125,7 +127,7 @@ export default function CabinRow({ cabin, index }) {
           <PiTrash />
           {/*  */}
         </Button>
-        <Link
+        {/* <Link
           to={`editCabin?type=edit&cabin=${JSON.stringify(cabin)}`}
           state={JSON.stringify(cabin)}
           style={{ width: "100%", display: "block" }}
@@ -133,7 +135,25 @@ export default function CabinRow({ cabin, index }) {
           <Button size="large" title={t("Pages.cabins.edit_cabin")}>
             <PiPencilSimpleLine />
           </Button>
-        </Link>
+        </Link> */}
+        <Modal>
+          <Modal.Open opens="cabin-edit">
+            <Button
+              size="large"
+              title={t("Pages.cabins.edit_cabin")}
+              onClick={() =>
+                navigate(`?type=edit&cabin=${JSON.stringify(cabin)}`, {
+                  state: JSON.stringify(cabin),
+                })
+              }
+            >
+              <PiPencilSimpleLine />
+            </Button>
+          </Modal.Open>
+          <Modal.Window name="cabin-edit">
+            <CreateCabinForm />
+          </Modal.Window>
+        </Modal>
         <Button
           title={t("Pages.cabins.duplicate")}
           size="large"

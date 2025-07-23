@@ -13,3 +13,5 @@ const StyledSelect = styled.select`
   font-weight: 500;
   box-shadow: var(--shadow-sm);
 `;
+
+export default StyledSelect;

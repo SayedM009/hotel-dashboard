@@ -67,6 +67,7 @@ export default function MainNav() {
       icon: <HiCalendarDateRange />,
     },
     { path: "cabins", name: t("NavLinks.cabins"), icon: <HiHomeModern /> },
+    { path: "umrah", name: "Umrah", icon: <HiHomeModern /> },
     { path: "users", name: t("NavLinks.users"), icon: <HiOutlineUsers /> },
     {
       path: "settings",
@@ -78,7 +79,7 @@ export default function MainNav() {
   const queryClient = useQueryClient();
 
   async function handleOver() {
-    await await queryClient.prefetchQuery({
+    await queryClient.prefetchQuery({
       queryKey: ["cabins"],
       queryFn: getCabins,
     });

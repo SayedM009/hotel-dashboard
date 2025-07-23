@@ -13,9 +13,10 @@ import { Toaster } from "react-hot-toast";
 const AppLayout = lazy(() => import("./ui/AppLayout"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Bookings = lazy(() => import("./pages/Bookings"));
-const Cabins = lazy(() => import("./pages/Cabins"));
+// const Cabins = lazy(() => import("./pages/Cabins"));
 const CabinsTable = lazy(() => import("./features/cabins/CabinTable"));
-const CreateCabinForm = lazy(() => import("./features/cabins/CreateCabinForm"));
+const UmrahTable = lazy(() => import("./features/umrah/UmrahTable"));
+// const CreateCabinForm = lazy(() => import("./features/cabins/CreateCabinForm"));
 const Users = lazy(() => import("./pages/Users"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Account = lazy(() => import("./pages/Account"));
@@ -55,21 +56,25 @@ const router = createBrowserRouter([
       },
       {
         path: "cabins",
-        element: <Cabins />,
-        children: [
-          {
-            index: true,
-            element: <CabinsTable />,
-          },
-          {
-            path: "addCabin",
-            element: <CreateCabinForm />,
-          },
-          {
-            path: "editCabin",
-            element: <CreateCabinForm />,
-          },
-        ],
+        element: <CabinsTable />,
+        // children: [
+        //   {
+        //     index: true,
+        //     element: <CabinsTable />,
+        //   },
+        //   {
+        //     path: "addCabin",
+        //     element: <CreateCabinForm />,
+        //   },
+        //   {
+        //     path: "editCabin",
+        //     element: <CreateCabinForm />,
+        //   },
+        // ],
+      },
+      {
+        path: "umrah",
+        element: <UmrahTable />,
       },
       {
         path: "users",

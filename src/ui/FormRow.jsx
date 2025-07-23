@@ -44,7 +44,7 @@ export default function FormRow({ children, label = "", error }) {
       <Label
         htmlFor={children[0] ? children?.[0]?.props?.id : children.props.id}
       >
-        {label && t(`Pages.cabins.${label}`)}
+        {label && t(`${label}`)}
       </Label>
       {children}
       <Error>{error}</Error>

@@ -39,6 +39,31 @@
       "maxBookingLength": "Max Booking Length",
       "maxGeustsPerBooking": "Max Geusts Per Booking",
       "breakfastPrice": "Breakfast Price"
+    },
+    "umrah": {
+      "clientName": "Client Name",
+      "client_name_required": " Clinet name is required",
+      "service_type": "Service type",
+      "service_type_required": "Service type is required",
+      "total_price": "Total price",
+      "total_price_required": "Total price is required",
+      "total_price_min_value": "Total price should be 25 or more",
+      "received": "Received",
+      "received_required": "Received is required",
+      "received_min_value": "Received payment can not be less than 0",
+      "received_bigger_total_price": "Received payment can not be bigger that total price",
+      "profit": "Profit",
+      "profit_required": "Profit is required",
+      "profit_min_value": "Profit should be 25 or more",
+      "profit_bigger_total_price": "Profit can not be bigger that total price",
+      "employeeName": "Employee Name",
+      "employee_name_required": "Employee Name is required",
+      "status": "Status",
+      "status_required": "Status is required",
+      "servicePaymentStatus": "Service paymet status",
+      "service_payment_status_required": "Service paymet status is required",
+      "travelDate": "Travel Date",
+      "travel_date_required": "Travel Date is required"
     }
   }
 }
