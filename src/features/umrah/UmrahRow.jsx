@@ -100,6 +100,9 @@ const Actions = styled.div`
 
   svg {
     cursor: pointer;
+    font-size: 1.8rem;
+    color: var(--color-grey-600);
+    transition: 0.3s all ease-in-out;
   }
 `;
 
