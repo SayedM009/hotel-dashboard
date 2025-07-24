@@ -25,22 +25,18 @@ const Icon = styled.div`
   }
 `;
 
-function CreateCabinForm({ onCloseModal }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const edit = searchParams.get("type");
-  const loaction = useLocation();
-  const cabinData = location ? JSON.parse(loaction.state) : null;
-  console.log(cabinData);
+function CreateCabinForm({ onCloseModal, cabin }) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { register, handleSubmit, formState, getValues } = useForm({
-    defaultValues: cabinData ? cabinData : {},
+    defaultValues: cabin,
   });
   const { name, description, maxCapacity, regulerPrice, discount, image } =
     formState.errors;
-  const { createEdit, isPending } = useCreateEditCabin(edit);
+  const { createEdit, isPending } = useCreateEditCabin(cabin && true);
 
   function onSubmit(data) {
+    console.log(data);
     createEdit(data, {
       onSuccess: () => {
         onCloseModal?.();
@@ -60,7 +56,7 @@ function CreateCabinForm({ onCloseModal }) {
         <h6>{t("Pages.cabins.all_cabins")}</h6>
       </Icon>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        <FormRow label="name" error={name?.message}>
+        <FormRow label="Pages.cabins.name" error={name?.message}>
           <Input
             type="text"
             id="name"
@@ -70,7 +66,7 @@ function CreateCabinForm({ onCloseModal }) {
           />
         </FormRow>
 
-        <FormRow label="maxCapacity" error={maxCapacity?.message}>
+        <FormRow label="Pages.cabins.maxCapacity" error={maxCapacity?.message}>
           <Input
             type="number"
             id="maxCapacity"
@@ -84,7 +80,10 @@ function CreateCabinForm({ onCloseModal }) {
           />
         </FormRow>
 
-        <FormRow label="regulerPrice" error={regulerPrice?.message}>
+        <FormRow
+          label="Pages.cabins.regulerPrice"
+          error={regulerPrice?.message}
+        >
           <Input
             type="number"
             id="regulerPrice"
@@ -98,7 +97,7 @@ function CreateCabinForm({ onCloseModal }) {
           />
         </FormRow>
 
-        <FormRow label="discount" error={discount?.message}>
+        <FormRow label="Pages.cabins.discount" error={discount?.message}>
           <Input
             type="number"
             id="discount"
@@ -113,7 +112,7 @@ function CreateCabinForm({ onCloseModal }) {
           />
         </FormRow>
 
-        <FormRow label="description" error={description?.message}>
+        <FormRow label="Pages.cabins.description" error={description?.message}>
           <Textarea
             type="number"
             id="description"
@@ -123,7 +122,7 @@ function CreateCabinForm({ onCloseModal }) {
           />
         </FormRow>
 
-        <FormRow label="image" error={image?.message}>
+        <FormRow label="Pages.cabins.image" error={image?.message}>
           <FileInput
             id="image"
             accept="image/*"
@@ -143,13 +142,13 @@ function CreateCabinForm({ onCloseModal }) {
             {t("Pages.cabins.cancel")}
           </Button>
           <Button variation="primary" disabled={isPending}>
-            {edit && (
+            {cabin && (
               <>
                 <PiPencilSimpleLine />
                 {t("Pages.cabins.edit_cabin")}
               </>
             )}
-            {!edit && (
+            {!cabin && (
               <>
                 <PiPlus />
                 {t("Pages.cabins.add_cabin")}

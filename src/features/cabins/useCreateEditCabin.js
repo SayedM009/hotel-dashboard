@@ -8,6 +8,7 @@ function useCreateEditCabin(edit) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
   const { mutate: createEdit, isPending } = useMutation({
     mutationFn: (data) => {
       if (edit) return createEditCabin(data, data.id);

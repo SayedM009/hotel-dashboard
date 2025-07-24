@@ -4,17 +4,15 @@ import CabinRow from "./CabinRow";
 import Row from "../../ui/Row";
 import Heading from "../../ui/Heading";
 import Button from "../../ui/Button";
-import toast from "react-hot-toast";
 import Modal from "../../ui/Modal";
 import useGetCabins from "./useGetCabins";
 import CreateCabinForm from "./CreateCabinForm";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { PiPlus } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
 const Table = styled.div`
   border: 1px solid var(--color-grey-200);
-
   font-size: 1.4rem;
   background-color: var(--color-grey-0);
   border-radius: 7px;
@@ -43,8 +41,7 @@ const StyledLink = styled(Link)`
 
 export default function CabinTable() {
   const { t } = useTranslation();
-  const location = useLocation();
-  const { cabins, isLoading, isFetching, error, refetch } = useGetCabins();
+  const { cabins, isLoading, isFetching, error } = useGetCabins();
 
   {
     isFetching && !isLoading && <Spinner />;
@@ -53,10 +50,8 @@ export default function CabinTable() {
   return (
     <>
       <Row type="horizontal">
-        <div>
-          <Heading as="h1">{t("Pages.cabins.all_cabins")}</Heading>
-          Count : {cabins && cabins.length}
-        </div>
+        <Heading as="h1">{t("Pages.cabins.all_cabins")}</Heading>
+
         <p>Filter/Sort</p>
       </Row>
       <Table role="table">
@@ -73,21 +68,7 @@ export default function CabinTable() {
           <CabinRow cabin={cabin} key={cabin.id} index={index} />
         ))}
       </Table>
-      {/* <StyledLink to={`addCabin${location.search}`}>
-        <Button style={{ width: "100%" }}>
-          <PiPlus />
-          {t("Pages.cabins.add_cabin")}
-        </Button>
-      </StyledLink> */}
-      {/* <Button
-        size="medium"
-        onClick={async () => {
-          await refetch();
-          toast.success("Cabins loaded");
-        }}
-      >
-        Refetch Cabins
-      </Button> */}
+
       <Modal>
         <Modal.Open opens="cabin-form">
           <Button>
@@ -97,29 +78,6 @@ export default function CabinTable() {
         </Modal.Open>
         <Modal.Window name="cabin-form">
           <CreateCabinForm />
-        </Modal.Window>
-
-        <Modal.Open opens="table">
-          <Button>
-            <PiPlus />
-            Show Table
-          </Button>
-        </Modal.Open>
-        <Modal.Window name="table">
-          <Table role="table">
-            <TableHeader role="row">
-              <div>Id No.</div>
-              <div>Image</div>
-              <div>{t("Pages.cabins.cabin")}</div>
-              <div>{t("Pages.cabins.capacity")}</div>
-              <div>{t("Pages.cabins.price")}</div>
-              <div>{t("Pages.cabins.discount")}</div>
-              <div>{t("Pages.cabins.actions")}</div>
-            </TableHeader>
-            {cabins?.map((cabin, index) => (
-              <CabinRow cabin={cabin} key={cabin.id} index={index} />
-            ))}
-          </Table>
         </Modal.Window>
       </Modal>
     </>

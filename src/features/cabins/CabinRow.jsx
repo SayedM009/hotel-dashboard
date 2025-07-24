@@ -15,6 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import { downLoadImage } from "../../services/apiCabins";
 import Modal from "../../ui/Modal";
 import CreateCabinForm from "./CreateCabinForm";
+import ConfirmDelete from "../../ui/ConfirmDelete";
 
 const TableRow = styled.div`
   display: grid;
@@ -115,45 +116,32 @@ export default function CabinRow({ cabin, index }) {
       <Price>{formatCurrency(regulerPrice)}</Price>
       <Discount>{formatCurrency(discount)}</Discount>
       <Actions>
-        <Button
-          size="large"
-          title={t("Pages.cabins.delete")}
-          onClick={() => {
-            if (index === 0) return toast.error("Could not delete this cabin");
-            deleteCabin(cabinId);
-          }}
-          disabled={isPending}
-        >
-          <PiTrash />
-          {/*  */}
-        </Button>
-        {/* <Link
-          to={`editCabin?type=edit&cabin=${JSON.stringify(cabin)}`}
-          state={JSON.stringify(cabin)}
-          style={{ width: "100%", display: "block" }}
-        >
-          <Button size="large" title={t("Pages.cabins.edit_cabin")}>
-            <PiPencilSimpleLine />
-          </Button>
-        </Link> */}
         <Modal>
+          {/* Delete Cabin */}
+          <Modal.Open opens="delete-cabin">
+            <Button size="large" title={t("Pages.cabins.delete")}>
+              <PiTrash />
+            </Button>
+          </Modal.Open>
+          <Modal.Window name="delete-cabin">
+            <ConfirmDelete
+              resourceName={name}
+              onConfirm={() => deleteCabin(cabin)}
+            />
+          </Modal.Window>
+          {/* Delete Cabin */}
+          {/* Delete Edit */}
           <Modal.Open opens="cabin-edit">
-            <Button
-              size="large"
-              title={t("Pages.cabins.edit_cabin")}
-              onClick={() =>
-                navigate(`?type=edit&cabin=${JSON.stringify(cabin)}`, {
-                  state: JSON.stringify(cabin),
-                })
-              }
-            >
+            <Button size="large" title={t("Pages.cabins.edit_cabin")}>
               <PiPencilSimpleLine />
             </Button>
           </Modal.Open>
           <Modal.Window name="cabin-edit">
-            <CreateCabinForm />
+            <CreateCabinForm cabin={cabin} />
           </Modal.Window>
+          {/* Delete Edit */}
         </Modal>
+        {/* Duplicate */}
         <Button
           title={t("Pages.cabins.duplicate")}
           size="large"
@@ -171,9 +159,9 @@ export default function CabinRow({ cabin, index }) {
           }}
           disabled={isPendingDublicating}
         >
-          {/* Duplicate */}
           <PiCopySimple />
         </Button>
+        {/* Download Image */}
         <Button
           title={t("Pages.cabins.duplicate")}
           size="large"

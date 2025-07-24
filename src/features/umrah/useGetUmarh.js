@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUmrah } from "../../services/apiUmrah";
+import { getUmrahs } from "../../services/apiUmrah";
 
-function useGetCabins(obj) {
+function useGetUmrah(obj) {
   const {
     data: umrahs,
     isLoading,
@@ -9,12 +9,14 @@ function useGetCabins(obj) {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["umrah", obj],
-    queryFn: () => getUmrah(obj),
-    refetchOnReconnect: false,
+    queryKey: ["umrah", obj.type],
+    queryFn: () => getUmrahs(obj),
+    refetchOnWindowFocus: false, // لا تعيد الجلب عند الرجوع للنافذة
+    refetchOnMount: false, // لا تعيد الجلب عند إعادة mount
+    refetchOnReconnect: false, // لا تعيد الجلب عند الاتصال بالإنترنت مجددًا
   });
 
   return { umrahs, isLoading, isFetching, error, refetch };
 }
 
-export default useGetCabins;
+export default useGetUmrah;

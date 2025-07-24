@@ -1,12 +1,26 @@
-import styled, { css } from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../utils/helpers";
-import Tippy from "@tippyjs/react";
-import { PiExclamationMarkBold, PiCirclesFour, PiXBold } from "react-icons/pi";
+import {
+  PiExclamationMarkBold,
+  PiListBold,
+  PiXBold,
+  PiPenBold,
+  PiTrash,
+} from "react-icons/pi";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteUmrahAPI } from "../../services/apiUmrah";
+import { StyledButton, StyledList } from "../../ui/Menus";
+import styled from "styled-components";
+import Tippy from "@tippyjs/react";
+import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
+import Modal from "../../ui/Modal";
+import ConfirmDelete from "../../ui/ConfirmDelete";
+import toast from "react-hot-toast";
+import CreateUmrahForm from "./CreateUmrahForm";
+import Row from "../../ui/Row";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns:
@@ -19,9 +33,8 @@ const TableRow = styled.div`
     minmax(120px, 1fr) /* PROFIT */
     minmax(180px, 1fr) /* DATES */
     minmax(120px, 0.8fr) /* SALES NAME */
-    minmax(130px, 1fr) /* SERVICE STATUS */
-    minmax(130px, 1fr) /* PAYMENT STATUS */
-    minmax(100px, 1fr);
+    minmax(130px, 2.5fr) /*  STATUSES */
+    minmax(100px, 1fr); /* ACTIONS */
   gap: 1.2rem;
   align-items: center;
   padding: 1.4rem 2.4rem;
@@ -64,7 +77,8 @@ const Status = styled.span`
   font-size: 1.2rem;
   text-transform: capitalize;
   font-weight: 700;
-  width: fit-content;
+  width: 50%;
+  text-align: center;
   background-color: ${({ type }) =>
     type === "paid" || type === "finished"
       ? "#D1FADF"
@@ -99,28 +113,9 @@ const CustomTippy = styled.span`
   text-transform: uppercase;
 `;
 
-const MenuList = styled.ul`
-  position: absolute;
-  left: -170px;
-  top: 0;
-  background-color: var(--color-brand-200);
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  li {
-    padding: 0.5rem 1.5rem;
-    cursor: pointer;
-  }
-
-  li:hover {
-    background-color: white;
-  }
-`;
-
 export default function CabinRow({ umrah, index }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { ref: outRef } = useHandleOutsideClick(() => setIsOpen(false));
   const { t, i18n } = useTranslation();
   const {
     id: umrahId,
@@ -138,7 +133,17 @@ export default function CabinRow({ umrah, index }) {
     month,
   } = umrah;
 
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: deleteUmrahAPI,
+    onSuccess: () => {
+      toast.success(`Umrah ${clientName}'s order deleted sucessfully`);
+      queryClient.invalidateQueries(["umarh"]);
+    },
+    onError: (error) => {
+      toast.error(error || error.message);
+    },
+  });
 
   return (
     <TableRow index={index} type={status}>
@@ -164,23 +169,51 @@ export default function CabinRow({ umrah, index }) {
           <strong>Added</strong> : {formatDate(createdAt)}
         </p>
         <p>
-          <strong>Travel</strong> : {formatDate(new Date(year, month, day))}
+          <strong>Travel</strong> : {formatDate(new Date(year, month - 1, day))}
         </p>
       </div>
-      <p>{employeeName}</p>
-      <p>
-        <Status type={status}>{status}</Status>
-      </p>
-      <Status type={servicePaymentStatus}>{servicePaymentStatus}</Status>
+      <p style={{ textAlign: "center" }}>{employeeName}</p>
+      <Row>
+        <Row type="horizontal">
+          <p>Service status :</p>
+          <Status type={status}>{status}</Status>
+        </Row>
+        <Row type="horizontal">
+          <p>Payment status :</p>
+          <Status type={servicePaymentStatus}>{servicePaymentStatus}</Status>
+        </Row>
+      </Row>
       <Actions>
-        {!isOpen && <PiCirclesFour onClick={() => setIsOpen(!isOpen)} />}
+        {!isOpen && <PiListBold onClick={() => setIsOpen(!isOpen)} />}
         {isOpen && <PiXBold onClick={() => setIsOpen(!isOpen)} />}
         {isOpen && (
-          <MenuList>
-            <li>one</li>
-            <li>two</li>
-            <li>three</li>
-          </MenuList>
+          <StyledList ref={outRef} position={{ x: 85, y: 0 }}>
+            <Modal>
+              <Modal.Open opens="delete-umrah">
+                <StyledButton>
+                  <PiTrash /> Delete
+                </StyledButton>
+              </Modal.Open>
+              <Modal.Window name="delete-umrah">
+                <ConfirmDelete
+                  resourceName={`${clientName} order`}
+                  onConfirm={() => mutate(umrahId)}
+                />
+              </Modal.Window>
+              <Modal.Open opens="edit-umrah">
+                <StyledButton>
+                  <PiPenBold />
+                  Edit
+                </StyledButton>
+              </Modal.Open>
+              <Modal.Window name="edit-umrah">
+                <CreateUmrahForm
+                  umrah={umrah}
+                  onCloseModal={() => setIsOpen(false)}
+                />
+              </Modal.Window>
+            </Modal>
+          </StyledList>
         )}
       </Actions>
     </TableRow>

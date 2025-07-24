@@ -1,42 +1,41 @@
 import supabase from "./supabase";
 
-export async function getUmrah(obj) {
-  const { type, month, year } = obj;
+export async function getUmrahs(obj) {
   let query = supabase.from("umrah");
 
-  if (type === "all") {
-    let { data: umrah, error } = await query
-      .select("*")
-      .gte("travelDate", new Date().toISOString());
+  if (obj.type === "all") {
+    const { data: umrah, error } = await query.select("*");
 
     if (error) throw new Error(error.message);
 
     return umrah;
   }
 
-  if (type === "current") {
+  if (obj.type === "up coming") {
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth();
-    const currentDay = new Date().getDate();
     const { data: umrah, error } = await query
       .select()
-      .eq("month", currentMonth)
-      .eq("year", currentYear)
-      .gte("day", currentDay);
+      .eq("month", currentMonth + 1)
+      .eq("year", currentYear);
 
     if (error) throw new Error(error.message);
 
     return umrah;
   }
 
-  if (type === "spacific" && month && year) {
+  if (obj.type === "spacific") {
+    const fromISO = new Date(obj.from).toISOString(); // e.g. 2025-08-01T00:00:00.000Z
+    const toDate = new Date(obj.to);
+    toDate.setHours(23, 59, 59, 999); // 31st August 23:59:59.999
+    const toISO = toDate.toISOString();
+
     const { data: umrah, error } = await query
       .select()
-      .eq("month", month)
-      .eq("year", year);
+      .gte("travelDate", fromISO)
+      .lte("travelDate", toISO);
 
     if (error) throw new Error(error.message);
-
     return umrah;
   }
 }
@@ -49,6 +48,30 @@ export async function createUmrahAPI(obj) {
     .select();
 
   if (error) throw new Error(error.message);
+
+  return umrah;
+}
+
+export async function deleteUmrahAPI(id) {
+  const { error } = await supabase.from("umrah").delete().eq("id", id);
+
+  if (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
+}
+
+export async function updateUmrahAPI(obj) {
+  const { data: umrah, error } = await supabase
+    .from("umrah")
+    .update({ ...obj })
+    .eq("id", obj.id)
+    .select();
+
+  if (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
 
   return umrah;
 }

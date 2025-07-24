@@ -26,14 +26,15 @@ const StyledToggle = styled.button`
 `;
 
 const StyledList = styled.ul`
-  position: fixed;
+  position: absolute;
 
   background-color: var(--color-grey-0);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   border-radius: var(--border-radius-md);
 
   right: ${(props) => props.position.x}px;
   top: ${(props) => props.position.y}px;
+  overflow: hidden;
 `;
 
 const StyledButton = styled.button`
@@ -44,13 +45,13 @@ const StyledButton = styled.button`
   padding: 1.2rem 2.4rem;
   font-size: 1.4rem;
   transition: all 0.2s;
-
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 1.6rem;
 
   &:hover {
-    background-color: var(--color-grey-50);
+    background-color: var(--color-grey-100);
   }
 
   & svg {
@@ -60,3 +61,5 @@ const StyledButton = styled.button`
     transition: all 0.3s;
   }
 `;
+
+export { StyledMenu, StyledToggle, StyledList, StyledButton };

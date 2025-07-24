@@ -1,18 +1,17 @@
+/* eslint-disable react/prop-types */
 import styled from "styled-components";
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import FormRow from "../../ui/FormRow";
-import Textarea from "../../ui/Textarea";
 import StyledSelect from "../../ui/Select";
-import useCreateEditCabin from "./useCreateUmrah";
 import { PiArrowFatLeft, PiArrowFatRight, PiPlus } from "react-icons/pi";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { PiPencilSimpleLine } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 import useCreateUmrah from "./useCreateUmrah";
+import useEditUmrah from "./useEditUmrah";
 
 const Icon = styled.div`
   font-size: 36px;
@@ -27,13 +26,16 @@ const Icon = styled.div`
   }
 `;
 
-function CreateCabinForm({ onCloseModal }) {
-  const loaction = useLocation();
-  const cabinData = location ? JSON.parse(loaction.state) : null;
+function CreateUmrahForm({ umrah, onCloseModal }) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { register, handleSubmit, formState, getValues, watch } = useForm({
-    defaultValues: cabinData ? cabinData : {},
+  const { register, handleSubmit, formState, watch } = useForm({
+    defaultValues: umrah
+      ? {
+          ...umrah,
+          travelDate: new Date(umrah.travelDate).toISOString().split("T")[0],
+        }
+      : {},
   });
   const {
     clientName,
@@ -48,23 +50,40 @@ function CreateCabinForm({ onCloseModal }) {
     image,
   } = formState.errors;
   const { createUmrah, isPending } = useCreateUmrah();
+  const { updateUmrah } = useEditUmrah();
 
   function onSubmit(data) {
-    const date = new Date(data.travelDate);
-    const day = date.getDate();
-    const month = date.getMonth();
-    const year = date.getFullYear();
-    const newData = {
-      ...data,
-      day,
-      month,
-      year,
-    };
-    createUmrah(newData, {
-      onSuccess: () => {
-        onCloseModal?.();
-      },
-    });
+    if (umrah) {
+      const date = new Date(umrah.travelDate);
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const newData = {
+        ...data,
+        day,
+        month,
+        year,
+      };
+      updateUmrah(newData);
+    }
+
+    if (!umrah) {
+      const date = new Date(data.travelDate);
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const newData = {
+        ...data,
+        day,
+        month,
+        year,
+      };
+      createUmrah(newData, {
+        onSuccess: () => {
+          onCloseModal?.();
+        },
+      });
+    }
   }
 
   return (
@@ -189,6 +208,19 @@ function CreateCabinForm({ onCloseModal }) {
             id="servicePaymentStatus"
             {...register("servicePaymentStatus", {
               required: t("Pages.umrah.service_payment_status_required"),
+              validate: (value) => {
+                if (value == "paid")
+                  return (
+                    watch("received") >= watch("totalPrice") ||
+                    "Can not be paid until we receive 100% "
+                  );
+
+                if (value === "down payment")
+                  return (
+                    !(watch("received") >= watch("totalPrice")) ||
+                    "Can not be down payment because we received the total amount or more change it to paid "
+                  );
+              },
             })}
           >
             <option></option>
@@ -229,4 +261,4 @@ function CreateCabinForm({ onCloseModal }) {
   );
 }
 
-export default CreateCabinForm;
+export default CreateUmrahForm;
