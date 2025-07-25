@@ -10,7 +10,7 @@ import {
   PiTrash,
   PiDownload,
 } from "react-icons/pi";
-import { StyledButton, StyledList } from "../../ui/Menus";
+import { StyledButton, StyledList, StyledToggle } from "../../ui/Menus";
 import styled from "styled-components";
 import Tippy from "@tippyjs/react";
 import useHandleOutsideClick from "../../hooks/useHandleOutsideClick";
@@ -23,7 +23,7 @@ import useDeleteUmrah from "./useDeleteCabin";
 import { useMutation } from "@tanstack/react-query";
 import { downLoadUmrahImgs } from "../../services/apiUmrah";
 import toast from "react-hot-toast";
-
+import { IoMdAlert } from "react-icons/io";
 const Cabin = styled.div`
   font-size: 1.4rem;
   font-weight: 500;
@@ -119,7 +119,10 @@ export default function CabinRow({ umrah, index }) {
         arrow={true}
       >
         <Cabin>
-          {clientName.slice(0, 12)} <PiExclamationMarkBold />
+          {clientName.slice(0, 12)}{" "}
+          <sup>
+            <IoMdAlert />
+          </sup>
         </Cabin>
       </Tippy>
       <p>{serviceType}</p>
@@ -159,8 +162,10 @@ function Actions({ umrah, clientName, files }) {
   });
   return (
     <StyledActions>
-      {!isOpen && <PiListBold onClick={() => setIsOpen(!isOpen)} />}
-      {isOpen && <PiXBold onClick={() => setIsOpen(!isOpen)} />}
+      <StyledToggle>
+        {!isOpen && <PiListBold onClick={() => setIsOpen(!isOpen)} />}
+        {isOpen && <PiXBold onClick={() => setIsOpen(!isOpen)} />}
+      </StyledToggle>
       {isOpen && (
         <StyledList ref={outRef} position={{ x: 50, y: 0 }}>
           <Modal>

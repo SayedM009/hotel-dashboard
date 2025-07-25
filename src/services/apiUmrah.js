@@ -1,7 +1,6 @@
 import supabase from "./supabase";
 import { downLoadImage } from "./apiCabins";
 export async function getUmrahs(obj) {
-  console.log(obj);
   let query = supabase.from("umrah");
 
   if (obj.type === "all") {
@@ -17,7 +16,7 @@ export async function getUmrahs(obj) {
     const currentMonth = new Date().getMonth();
     const { data: umrah, error } = await query
       .select()
-      .eq("month", currentMonth + 1)
+      .gte("month", currentMonth)
       .eq("year", currentYear);
 
     if (error) throw new Error(error.message);
@@ -26,17 +25,15 @@ export async function getUmrahs(obj) {
   }
 
   if (obj.type === "spacific") {
-    const fromISO = new Date(obj.from).toISOString(); // e.g. 2025-08-01T00:00:00.000Z
+    const fromISO = new Date(obj.from).toISOString();
     const toDate = new Date(obj.to);
-    toDate.setHours(23, 59, 59, 999); // 31st August 23:59:59.999
+    toDate.setHours(23, 59, 59, 999);
     const toISO = toDate.toISOString();
 
     const { data: umrah, error } = await query
       .select()
       .gte("travelDate", fromISO)
       .lte("travelDate", toISO);
-
-    console.log(umrah);
 
     if (error) throw new Error(error.message);
     return umrah;

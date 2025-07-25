@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { PiPlus } from "react-icons/pi";
 import { formatCurrency } from "../../utils/helpers";
 import { useState } from "react";
@@ -13,20 +13,25 @@ import Modal from "../../ui/Modal";
 import CreateUmrahForm from "./CreateUmrahForm";
 import useGetUmrah from "./useGetUmarh";
 import toast from "react-hot-toast";
+import StyledSelect from "../../ui/Select";
+import SortBy from "../../ui/SortBy";
+import { useSearchParams } from "react-router-dom";
 
-const StyledLink = styled(Link)`
-  width: 100%;
-  display: block;
-`;
+// const StyledLink = styled(Link)`
+//   width: 100%;
+//   display: block;
+// `;
 
 const SummaryTable = styled.div`
   display: grid;
   grid-template-columns: repeat(5, minmax(100px, 1fr));
   column-gap: 2.4rem;
   align-items: center;
-  background-color: var(--color-brand-100);
+  background-color: var(--color-grey-200);
   padding: 1rem;
   min-height: 50px;
+  border-radius: var(--border-radius-md);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
 `;
 
 const SummaryCell = styled.div`
@@ -91,6 +96,7 @@ const columns = `minmax(50px, 0.3fr) /* NO. */
     minmax(50px, 1fr); /* ACTIONSs */`;
 
 export default function CabinTable() {
+  const [searchParams] = useSearchParams();
   const [resultType, setResultsType] = useState({
     type: "up coming",
     from: "",
@@ -98,6 +104,17 @@ export default function CabinTable() {
   });
 
   const { umrahs, isFetching, error, refetch } = useGetUmrah(resultType);
+
+  const [showingCount, setShowingCount] = useState(5);
+
+  const showingUmrahs = umrahs?.slice(0, showingCount);
+
+  const sortBy = searchParams.get("sortBy") || "";
+  const [field, direction] = sortBy.split("-");
+  const modifire = direction === "asc" ? 1 : -1;
+  const sortedUmrahs = showingUmrahs?.sort(
+    (a, b) => (a[field] - b[field]) * modifire
+  );
 
   if (error) return <div>Somthing went wrong!?</div>;
   return (
@@ -109,6 +126,7 @@ export default function CabinTable() {
         setResultsType={setResultsType}
         refetch={refetch}
       />
+
       {/* Table */}
       <Table columns={columns}>
         {/* Table header */}
@@ -130,26 +148,27 @@ export default function CabinTable() {
         {/* Table Body */}
         {!isFetching && (
           <Table.Body
-            data={umrahs}
+            data={sortedUmrahs}
             render={(umrah, index) => (
               <UmrahRow umrah={umrah} key={umrah.id} index={index} />
             )}
           />
         )}
       </Table>
-
-      {/* Add new umrah order */}
-      <Modal>
-        <Modal.Open opens="cabin-form">
-          <Button>
-            <PiPlus />
-            Add Umrah Order
-          </Button>
-        </Modal.Open>
-        <Modal.Window name="cabin-form">
-          <CreateUmrahForm />
-        </Modal.Window>
-      </Modal>
+      <StyledSelect
+        value={showingCount}
+        onChange={(e) => {
+          setShowingCount(e.target.value);
+        }}
+        type="white"
+      >
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+      </StyledSelect>
     </>
   );
 }
@@ -176,9 +195,9 @@ function Filters({ umrahs, resultType, setResultsType, refetch }) {
   return (
     <Row>
       {/* <Heading as="h1">Umrah Sales</Heading> */}
-      <div>
+      <Row type="horizontal">
         {/* <Heading as="h2">Summary</Heading> */}
-        <SummaryTable>
+        {/* <SummaryTable>
           <SummaryCell>
             <p>Umrah Order : {umrahs && umrahs.length}</p>
           </SummaryCell>
@@ -194,8 +213,39 @@ function Filters({ umrahs, resultType, setResultsType, refetch }) {
           <SummaryCell>
             <p>Total Refund : {getTotal("refund")}</p>
           </SummaryCell>
-        </SummaryTable>
-      </div>
+        </SummaryTable> */}
+        {/* Add new umrah order */}
+        <SortBy
+          options={[
+            {
+              value: "totalPrice-asc",
+              label: "Sort by total price (low first)",
+            },
+            {
+              value: "totalPrice-desc",
+              label: "Sort by total price (high first)",
+            },
+            { value: "profit-asc", label: "Sort by profit (low first)" },
+            { value: "profit-desc", label: "Sort by profit (high first)" },
+            { value: "clientName-asc", label: "Sort by clientName (A-Z)" },
+            {
+              value: "clientName-desc",
+              label: "Sort by clientName (Z-A)",
+            },
+          ]}
+        />
+        <Modal>
+          <Modal.Open opens="cabin-form">
+            <Button size="large">
+              <PiPlus />
+              Add Umrah Order
+            </Button>
+          </Modal.Open>
+          <Modal.Window name="cabin-form">
+            <CreateUmrahForm />
+          </Modal.Window>
+        </Modal>
+      </Row>
       <StyledTabsBox>
         <StyledTab
           className={resultType.type == "all" && "active"}

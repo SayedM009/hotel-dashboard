@@ -16,7 +16,12 @@ const StyledToggle = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: var(--color-grey-100);
+    background-color: var(--color-grey-300);
+    color: white;
+  }
+
+  &:hover svg {
+    /* color: white; */
   }
 
   & svg {
@@ -60,6 +65,7 @@ const StyledButton = styled.button`
     color: var(--color-grey-400);
     transition: all 0.3s;
   }
+  width: 100%;
 `;
 
 export { StyledMenu, StyledToggle, StyledList, StyledButton };
