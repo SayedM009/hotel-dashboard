@@ -10,29 +10,7 @@ import CreateCabinForm from "./CreateCabinForm";
 import { Link } from "react-router-dom";
 import { PiPlus } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
-
-const Table = styled.div`
-  border: 1px solid var(--color-grey-200);
-  font-size: 1.4rem;
-  background-color: var(--color-grey-0);
-  border-radius: 7px;
-  overflow: hidden;
-`;
-
-const TableHeader = styled.header`
-  display: grid;
-  grid-template-columns: 0.5fr 1fr 2fr 1.5fr 1fr 1fr 2fr;
-  column-gap: 2.4rem;
-  align-items: center;
-
-  background-color: var(--color-grey-50);
-  border-bottom: 1px solid var(--color-grey-100);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  font-weight: 600;
-  color: var(--color-grey-600);
-  padding: 1.6rem 2.4rem;
-`;
+import Table from "../../ui/Table";
 
 const StyledLink = styled(Link)`
   width: 100%;
@@ -54,8 +32,8 @@ export default function CabinTable() {
 
         <p>Filter/Sort</p>
       </Row>
-      <Table role="table">
-        <TableHeader role="row">
+      <Table columns="0.5fr 1fr 2fr 1.5fr 1fr 1fr 2fr">
+        <Table.Header>
           <div>Id No.</div>
           <div>Image</div>
           <div>{t("Pages.cabins.cabin")}</div>
@@ -63,7 +41,7 @@ export default function CabinTable() {
           <div>{t("Pages.cabins.price")}</div>
           <div>{t("Pages.cabins.discount")}</div>
           <div>{t("Pages.cabins.actions")}</div>
-        </TableHeader>
+        </Table.Header>
         {cabins?.map((cabin, index) => (
           <CabinRow cabin={cabin} key={cabin.id} index={index} />
         ))}

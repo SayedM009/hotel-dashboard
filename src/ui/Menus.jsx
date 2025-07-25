@@ -4,6 +4,7 @@ const StyledMenu = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  min-width: 1200px;
 `;
 
 const StyledToggle = styled.button`
@@ -38,7 +39,6 @@ const StyledList = styled.ul`
 `;
 
 const StyledButton = styled.button`
-  width: 100%;
   text-align: left;
   background: none;
   border: none;

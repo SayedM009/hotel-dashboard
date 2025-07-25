@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
 import Button from "../../ui/Button";
@@ -16,18 +17,7 @@ import { downLoadImage } from "../../services/apiCabins";
 import Modal from "../../ui/Modal";
 import CreateCabinForm from "./CreateCabinForm";
 import ConfirmDelete from "../../ui/ConfirmDelete";
-
-const TableRow = styled.div`
-  display: grid;
-  grid-template-columns: 0.5fr 1fr 2fr 1.5fr 1fr 1fr 2fr;
-  column-gap: 2.4rem;
-  align-items: center;
-  padding: 1.4rem 2.4rem;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-`;
+import Table from "../../ui/Table";
 
 const Img = styled.img`
   display: block;
@@ -79,7 +69,7 @@ const SkeletonBox = styled.div`
 
 export default function CabinRow({ cabin, index }) {
   const [isImgLoading, setIsImageLoading] = useState(true);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const {
     id: cabinId,
     image: src,
@@ -88,9 +78,9 @@ export default function CabinRow({ cabin, index }) {
     regulerPrice,
     discount,
   } = cabin;
-  const navigate = useNavigate();
   const { deleteCabin, isPending } = useDeleteCabin(name);
   const { createEdit, isPending: isPendingDublicating } = useCreateEditCabin();
+
   const { isPending: isDownloading, mutate } = useMutation({
     mutationFn: downLoadImage,
     onSuccess: () => {
@@ -101,7 +91,7 @@ export default function CabinRow({ cabin, index }) {
     },
   });
   return (
-    <TableRow>
+    <Table.Row>
       <div>{cabinId}</div>
       <ImageBox>
         <Img src={src} onLoad={() => setIsImageLoading(false)} />
@@ -173,6 +163,6 @@ export default function CabinRow({ cabin, index }) {
           <PiDownload />
         </Button>
       </Actions>
-    </TableRow>
+    </Table.Row>
   );
 }

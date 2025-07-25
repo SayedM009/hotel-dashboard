@@ -70,15 +70,20 @@ export async function createEditCabin(newCabin, id) {
   return cabin;
 }
 
-export async function downLoadImage(imgURL) {
-  const path = imgURL.replace(
-    "https://tqawvmzchgqpgyarqnmq.supabase.co/storage/v1/object/public/cabin-images/",
-    ""
-  );
+export async function downLoadImage(imgURL, key = "cabin-images") {
+  const path =
+    key === "umrah-files"
+      ? imgURL.replace(
+          `https://tqawvmzchgqpgyarqnmq.supabase.co/storage/v1/object/public/`,
+          ""
+        )
+      : imgURL.replace(
+          `https://tqawvmzchgqpgyarqnmq.supabase.co/storage/v1/object/public/${key}/`,
+          ""
+        );
 
-  const { data, error } = await supabase.storage
-    .from("cabin-images")
-    .download(path);
+  console.log(path);
+  const { data, error } = await supabase.storage.from(key).download(path);
 
   if (error) {
     console.error("Download error:", error);

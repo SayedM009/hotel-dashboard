@@ -7,7 +7,7 @@ import FileInput from "../../ui/FileInput";
 import FormRow from "../../ui/FormRow";
 import StyledSelect from "../../ui/Select";
 import { PiArrowFatLeft, PiArrowFatRight, PiPlus } from "react-icons/pi";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import useCreateUmrah from "./useCreateUmrah";
@@ -240,6 +240,10 @@ function CreateUmrahForm({ umrah, onCloseModal }) {
               required: t("Pages.umrah.travel_date_required"),
             })}
           />
+        </FormRow>
+
+        <FormRow>
+          <FileInput multiple id="files" {...register("files")} />
         </FormRow>
 
         <FormRow>

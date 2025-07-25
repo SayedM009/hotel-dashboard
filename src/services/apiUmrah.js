@@ -1,6 +1,7 @@
 import supabase from "./supabase";
-
+import { downLoadImage } from "./apiCabins";
 export async function getUmrahs(obj) {
+  console.log(obj);
   let query = supabase.from("umrah");
 
   if (obj.type === "all") {
@@ -35,16 +36,45 @@ export async function getUmrahs(obj) {
       .gte("travelDate", fromISO)
       .lte("travelDate", toISO);
 
+    console.log(umrah);
+
     if (error) throw new Error(error.message);
     return umrah;
   }
 }
 
 export async function createUmrahAPI(obj) {
-  console.log(obj);
+  const filesArray = Array.from(obj.files);
+  const uploadedURLs = [];
+
+  for (let i = 0; i < filesArray.length; i++) {
+    const file = filesArray[i];
+    const randomName = `${crypto.randomUUID()}-${file.name}`.replaceAll(
+      "/",
+      ""
+    );
+    const path = `${randomName}`;
+
+    // ارفع الملف
+    const { error: uploadError } = await supabase.storage
+      .from("umrah-files")
+      .upload(path, file);
+
+    if (uploadError) throw new Error(`Upload failed for ${file.name}`);
+    // خزّن الرابط
+    https: uploadedURLs.push(
+      `https://tqawvmzchgqpgyarqnmq.supabase.co/storage/v1/object/public/${path}`
+    );
+  }
+
   const { data: umrah, error } = await supabase
     .from("umrah")
-    .insert([{ ...obj }])
+    .insert([
+      {
+        ...obj,
+        files: uploadedURLs,
+      },
+    ])
     .select();
 
   if (error) throw new Error(error.message);
@@ -74,4 +104,14 @@ export async function updateUmrahAPI(obj) {
   }
 
   return umrah;
+}
+
+export async function downLoadUmrahImgs(urls) {
+  for (let i = 0; i < urls.length; i++) {
+    try {
+      await downLoadImage(urls[i], "umrah-files");
+    } catch (error) {
+      console.error(`❌ Failed: ${urls[i]}`, error);
+    }
+  }
 }

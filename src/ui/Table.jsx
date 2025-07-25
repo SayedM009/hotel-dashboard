@@ -1,12 +1,15 @@
+/* eslint-disable react/prop-types */
+import { createContext, useContext } from "react";
 import styled from "styled-components";
 
 const StyledTable = styled.div`
   border: 1px solid var(--color-grey-200);
-
   font-size: 1.4rem;
   background-color: var(--color-grey-0);
   border-radius: 7px;
-  overflow: hidden;
+  overflow: auto;
+  min-height: 400px;
+  margin: 1rem 0;
 `;
 
 const CommonRow = styled.div`
@@ -15,11 +18,17 @@ const CommonRow = styled.div`
   column-gap: 2.4rem;
   align-items: center;
   transition: none;
+  background-color: ${(props) => {
+    if (props.index >= 0) {
+      return props.index % 2 === 0
+        ? "var(--color-grey-100)"
+        : "var(--color-grey-200)";
+    } else return "";
+  }};
 `;
 
 const StyledHeader = styled(CommonRow)`
   padding: 1.6rem 2.4rem;
-
   background-color: var(--color-grey-50);
   border-bottom: 1px solid var(--color-grey-100);
   text-transform: uppercase;
@@ -57,4 +66,56 @@ const Empty = styled.p`
   font-weight: 500;
   text-align: center;
   margin: 2.4rem;
+  height: 30vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
+
+const TableContext = createContext();
+
+function Table({ columns, children }) {
+  return (
+    <TableContext.Provider value={{ columns }}>
+      <StyledTable role="table">{children}</StyledTable>
+    </TableContext.Provider>
+  );
+}
+
+function Header({ children }) {
+  const { columns } = useContext(TableContext);
+  return (
+    <StyledHeader role="row" as="header" columns={columns}>
+      {children}
+    </StyledHeader>
+  );
+}
+
+function Row({ children, index }) {
+  const { columns } = useContext(TableContext);
+  return (
+    <StyledRow columns={columns} index={index}>
+      {children}
+    </StyledRow>
+  );
+}
+
+function Body({ data, render }) {
+  if (!data.length)
+    return (
+      <Empty>
+        <h2>No Umrah Orders Found</h2>
+        <p>
+          Please add a new Umrah order to get started or change the filter
+          values.{" "}
+        </p>
+      </Empty>
+    );
+  return <StyledBody>{data.map(render)}</StyledBody>;
+}
+
+Table.Header = Header;
+Table.Row = Row;
+Table.Body = Body;
+
+export default Table;
