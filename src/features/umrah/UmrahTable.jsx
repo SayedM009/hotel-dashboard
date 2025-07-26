@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
-// import { Link } from "react-router-dom";
 import { PiPlus } from "react-icons/pi";
-import { formatCurrency } from "../../utils/helpers";
-import { useState } from "react";
-import styled from "styled-components";
+import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import styled, { css } from "styled-components";
 import Spinner from "../../ui/Spinner";
 import UmrahRow from "./UmrahRow";
 import Row from "../../ui/Row";
@@ -15,12 +14,7 @@ import useGetUmrah from "./useGetUmarh";
 import toast from "react-hot-toast";
 import StyledSelect from "../../ui/Select";
 import SortBy from "../../ui/SortBy";
-import { useSearchParams } from "react-router-dom";
-
-// const StyledLink = styled(Link)`
-//   width: 100%;
-//   display: block;
-// `;
+import useSortBy from "../../hooks/useSortBy";
 
 const SummaryTable = styled.div`
   display: grid;
@@ -42,7 +36,6 @@ const StyledTabsBox = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 1rem;
   align-items: center;
   justify-content: flex-start;
   font-size: 1.2rem;
@@ -59,11 +52,18 @@ const StyledTab = styled.button`
   &:focus {
     outline: none;
   }
-  &:hover,
-  &.active {
+
+  &:hover {
     background-color: var(--color-green-700);
     color: white;
   }
+
+  ${(props) =>
+    props.type === "active" &&
+    css`
+      background-color: var(--color-green-700);
+      color: white;
+    `}
 
   ${(props) =>
     props.type === "search" &&
@@ -94,39 +94,52 @@ const columns = `minmax(50px, 0.3fr) /* NO. */
     minmax(120px, 0.8fr) /* SALES NAME */
     minmax(170px, 2.5fr) /* SERVICE STATUS */
     minmax(50px, 1fr); /* ACTIONSs */`;
+const options = [
+  {
+    value: "totalPrice-asc",
+    label: "Sort by total price (low first)",
+  },
+  {
+    value: "totalPrice-desc",
+    label: "Sort by total price (high first)",
+  },
+  { value: "profit-asc", label: "Sort by profit (low first)" },
+  { value: "profit-desc", label: "Sort by profit (high first)" },
+  { value: "clientName-asc", label: "Sort by clientName (A-Z)" },
+  {
+    value: "clientName-desc",
+    label: "Sort by clientName (Z-A)",
+  },
+];
 
-export default function CabinTable() {
-  const [searchParams] = useSearchParams();
-  const [resultType, setResultsType] = useState({
-    type: "up coming",
-    from: "",
-    to: "",
-  });
+const operations = [
+  { name: "type", type: "all" },
+  { name: "type", type: "up coming" },
+];
 
-  const { umrahs, isFetching, error, refetch } = useGetUmrah(resultType);
+export default function UmrahTable() {
+  const { umrahs, isFetching, error } = useGetUmrah();
 
   const [showingCount, setShowingCount] = useState(5);
 
-  const showingUmrahs = umrahs?.slice(0, showingCount);
-
-  const sortBy = searchParams.get("sortBy") || "";
-  const [field, direction] = sortBy.split("-");
-  const modifire = direction === "asc" ? 1 : -1;
-  const sortedUmrahs = showingUmrahs?.sort(
-    (a, b) => (a[field] - b[field]) * modifire
+  const showingUmrahs = useMemo(
+    () => umrahs?.slice(0, showingCount),
+    [umrahs, showingCount]
   );
+  const { sortedObj: sortedUmrahs } = useSortBy(showingUmrahs);
 
   if (error) return <div>Somthing went wrong!?</div>;
   return (
     <>
       {/* Filters */}
-      <Filters
-        umrahs={umrahs}
-        resultType={resultType}
-        setResultsType={setResultsType}
-        refetch={refetch}
-      />
-
+      <Row type="horizontal">
+        <Operations
+          operations={operations}
+          options={options}
+          activeValue={operations[1].type}
+        />
+        <CustomeSearch />
+      </Row>
       {/* Table */}
       <Table columns={columns}>
         {/* Table header */}
@@ -158,7 +171,7 @@ export default function CabinTable() {
       <StyledSelect
         value={showingCount}
         onChange={(e) => {
-          setShowingCount(e.target.value);
+          setShowingCount(+e.target.value);
         }}
         type="white"
       >
@@ -169,133 +182,82 @@ export default function CabinTable() {
         <option value="40">40</option>
         <option value="50">50</option>
       </StyledSelect>
+      <Modal>
+        <Modal.Open opens="cabin-form">
+          <Button size="large">
+            <PiPlus />
+            Add Umrah Order
+          </Button>
+        </Modal.Open>
+        <Modal.Window name="cabin-form">
+          <CreateUmrahForm />
+        </Modal.Window>
+      </Modal>
     </>
   );
 }
 
-function Filters({ umrahs, resultType, setResultsType, refetch }) {
-  function getTotal(key) {
-    if (key === "received")
-      return formatCurrency(umrahs?.reduce((acc, cur) => acc + cur[key], 0));
+function Operations({ options, operations, activeValue = operations[0].name }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const URLTYPE = searchParams.get(operations[0].name) || activeValue;
 
-    if (key === "refund")
-      return formatCurrency(
-        umrahs
-          ?.filter((umrah) => umrah.servicePaymentStatus === "canceled")
-          .reduce((acc, cur) => acc + cur.received, 0)
-      );
-
-    if (key)
-      return formatCurrency(
-        umrahs
-          ?.filter((umrah) => umrah.servicePaymentStatus !== "canceled")
-          .reduce((acc, cur) => acc + cur[key], 0)
-      );
-  }
   return (
-    <Row>
-      {/* <Heading as="h1">Umrah Sales</Heading> */}
-      <Row type="horizontal">
-        {/* <Heading as="h2">Summary</Heading> */}
-        {/* <SummaryTable>
-          <SummaryCell>
-            <p>Umrah Order : {umrahs && umrahs.length}</p>
-          </SummaryCell>
-          <SummaryCell>
-            <p>Total sales :{getTotal("totalPrice")}</p>{" "}
-          </SummaryCell>
-          <SummaryCell>
-            <p>Total Profit : {getTotal("profit")}</p>
-          </SummaryCell>
-          <SummaryCell>
-            <p>Total Received : {getTotal("received")}</p>
-          </SummaryCell>
-          <SummaryCell>
-            <p>Total Refund : {getTotal("refund")}</p>
-          </SummaryCell>
-        </SummaryTable> */}
-        {/* Add new umrah order */}
-        <SortBy
-          options={[
-            {
-              value: "totalPrice-asc",
-              label: "Sort by total price (low first)",
-            },
-            {
-              value: "totalPrice-desc",
-              label: "Sort by total price (high first)",
-            },
-            { value: "profit-asc", label: "Sort by profit (low first)" },
-            { value: "profit-desc", label: "Sort by profit (high first)" },
-            { value: "clientName-asc", label: "Sort by clientName (A-Z)" },
-            {
-              value: "clientName-desc",
-              label: "Sort by clientName (Z-A)",
-            },
-          ]}
-        />
-        <Modal>
-          <Modal.Open opens="cabin-form">
-            <Button size="large">
-              <PiPlus />
-              Add Umrah Order
-            </Button>
-          </Modal.Open>
-          <Modal.Window name="cabin-form">
-            <CreateUmrahForm />
-          </Modal.Window>
-        </Modal>
-      </Row>
+    <Row type="horizontal">
       <StyledTabsBox>
-        <StyledTab
-          className={resultType.type == "all" && "active"}
-          onClick={() => setResultsType({ ...resultType, type: "all" })}
-        >
-          All
-        </StyledTab>
-        <StyledTab
-          className={resultType.type == "up coming" && "active"}
-          onClick={() => setResultsType({ ...resultType, type: "up coming" })}
-        >
-          up coming
-        </StyledTab>
-        |<p>From : </p>
-        <StyledInputDate
-          type="date"
-          value={resultType.from}
-          onChange={(e) =>
-            setResultsType({ ...resultType, from: e.target.value })
-          }
-        />
-        <p>To : </p>
-        <StyledInputDate
-          type="date"
-          value={resultType.to}
-          onChange={(e) =>
-            setResultsType({ ...resultType, to: e.target.value })
-          }
-        />
-        <StyledTab
-          type="search"
-          onClick={() => {
-            if (!resultType.from || !resultType.to) {
-              return toast.error("Please select both dates");
-            }
-            setResultsType({ ...resultType, type: "spacific" });
-            refetch();
-            setTimeout(() => {
-              setResultsType({
-                ...resultType,
-                type: "spacific",
-                from: "",
-                to: "",
-              });
-            }, 1000);
-          }}
-        >
-          Search
-        </StyledTab>
+        {operations.map(({ name, type }, index) => (
+          <StyledTab
+            type={URLTYPE === type && "active"}
+            onClick={() => {
+              searchParams.set(name, type);
+              setSearchParams(searchParams);
+            }}
+            key={index}
+          >
+            {type}
+          </StyledTab>
+        ))}
+        <SortBy options={options} />
       </StyledTabsBox>
+    </Row>
+  );
+}
+
+function CustomeSearch() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const FROM = searchParams.get("from") || "";
+  const TO = searchParams.get("to") || "";
+  return (
+    <Row type="horizontal">
+      <h5>From : </h5>
+      <StyledInputDate
+        type="date"
+        value={FROM}
+        onChange={(e) => {
+          searchParams.set("from", e.target.value);
+          setSearchParams(searchParams);
+        }}
+      />
+      <h5>To : </h5>
+      <StyledInputDate
+        type="date"
+        value={TO}
+        onChange={(e) => {
+          searchParams.set("to", e.target.value);
+          setSearchParams(searchParams);
+        }}
+      />
+      <StyledTab
+        type="search"
+        onClick={() => {
+          if (!FROM || !TO) return toast.error("Please select both dates");
+
+          searchParams.set("type", "range");
+          setSearchParams(searchParams);
+        }}
+      >
+        Search
+      </StyledTab>
     </Row>
   );
 }

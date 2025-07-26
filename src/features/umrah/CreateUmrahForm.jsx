@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import useCreateUmrah from "./useCreateUmrah";
 import useEditUmrah from "./useEditUmrah";
+import { memo } from "react";
 
 const Icon = styled.div`
   font-size: 36px;
@@ -265,4 +266,4 @@ function CreateUmrahForm({ umrah, onCloseModal }) {
   );
 }
 
-export default CreateUmrahForm;
+export default memo(CreateUmrahForm);

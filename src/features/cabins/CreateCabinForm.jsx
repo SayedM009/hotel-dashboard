@@ -31,7 +31,7 @@ function CreateCabinForm({ onCloseModal, cabin }) {
   const { register, handleSubmit, formState, getValues } = useForm({
     defaultValues: cabin,
   });
-  const { name, description, maxCapacity, regulerPrice, discount, image } =
+  const { name, description, maxCapacity, regularPrice, discount, image } =
     formState.errors;
   const { createEdit, isPending } = useCreateEditCabin(cabin && true);
 
@@ -81,13 +81,13 @@ function CreateCabinForm({ onCloseModal, cabin }) {
         </FormRow>
 
         <FormRow
-          label="Pages.cabins.regulerPrice"
-          error={regulerPrice?.message}
+          label="Pages.cabins.regularPrice"
+          error={regularPrice?.message}
         >
           <Input
             type="number"
-            id="regulerPrice"
-            {...register("regulerPrice", {
+            id="regularPrice"
+            {...register("regularPrice", {
               required: t("Pages.cabins.reguler_price_required"),
               min: {
                 value: 1,
@@ -105,7 +105,7 @@ function CreateCabinForm({ onCloseModal, cabin }) {
             {...register("discount", {
               required: t("Pages.cabins.discount_required"),
               validate: (value) =>
-                value < getValues().regulerPrice ||
+                value < getValues().regularPrice ||
                 value <= 0 ||
                 t("Pages.cabins.discount_less_than"),
             })}

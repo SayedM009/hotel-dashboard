@@ -11,6 +11,8 @@ import { Link } from "react-router-dom";
 import { PiPlus } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 import Table from "../../ui/Table";
+import useSortBy from "../../hooks/useSortBy";
+import SortBy from "../../ui/SortBy";
 
 const StyledLink = styled(Link)`
   width: 100%;
@@ -24,13 +26,24 @@ export default function CabinTable() {
   {
     isFetching && !isLoading && <Spinner />;
   }
+
+  const { sortedObj: sortedCabins } = useSortBy(cabins);
+
+  console.log(sortedCabins);
   if (error) return <div>Somthing went wrong!?</div>;
   return (
     <>
       <Row type="horizontal">
         <Heading as="h1">{t("Pages.cabins.all_cabins")}</Heading>
 
-        <p>Filter/Sort</p>
+        <SortBy
+          options={[
+            { value: "regularPrice-asc", label: "Sort by Price (low first)" },
+            { value: "regularPrice-desc", label: "Sort by Price (high first)" },
+            { value: "discount-asc", label: "Sort by discount (low first)" },
+            { value: "discount-desc", label: "Sort by discount (high first)" },
+          ]}
+        />
       </Row>
       <Table columns="0.5fr 1fr 2fr 1.5fr 1fr 1fr 2fr">
         <Table.Header>
@@ -42,7 +55,7 @@ export default function CabinTable() {
           <div>{t("Pages.cabins.discount")}</div>
           <div>{t("Pages.cabins.actions")}</div>
         </Table.Header>
-        {cabins?.map((cabin, index) => (
+        {sortedCabins?.map((cabin, index) => (
           <CabinRow cabin={cabin} key={cabin.id} index={index} />
         ))}
       </Table>

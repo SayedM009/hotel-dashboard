@@ -75,7 +75,7 @@ export default function CabinRow({ cabin, index }) {
     image: src,
     name,
     maxCapacity,
-    regulerPrice,
+    regularPrice,
     discount,
   } = cabin;
   const { deleteCabin, isPending } = useDeleteCabin(name);
@@ -103,7 +103,7 @@ export default function CabinRow({ cabin, index }) {
       </ImageBox>
       <Cabin>{name}</Cabin>
       <p>Fits up to {maxCapacity} guests</p>
-      <Price>{formatCurrency(regulerPrice)}</Price>
+      <Price>{formatCurrency(regularPrice)}</Price>
       <Discount>{formatCurrency(discount)}</Discount>
       <Actions>
         <Modal>
@@ -141,7 +141,7 @@ export default function CabinRow({ cabin, index }) {
                 image: src,
                 name: `Copy of ${name}`,
                 maxCapacity,
-                regulerPrice,
+                regularPrice,
                 discount,
               },
               cabinId

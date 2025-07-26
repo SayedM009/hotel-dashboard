@@ -28,7 +28,11 @@ const StyledSelect = styled.select`
 
 export function Select({ options, value, handleChange, ...props }) {
   return (
-    <StyledSelect value={value} {...props} onChange={handleChange}>
+    <StyledSelect
+      value={value || options[0].value}
+      {...props}
+      onChange={handleChange}
+    >
       {options?.map((option) => (
         <option key={option.value} value={option.value}>
           {option.label}
