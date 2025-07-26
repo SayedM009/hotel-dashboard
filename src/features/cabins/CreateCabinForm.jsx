@@ -36,7 +36,6 @@ function CreateCabinForm({ onCloseModal, cabin }) {
   const { createEdit, isPending } = useCreateEditCabin(cabin && true);
 
   function onSubmit(data) {
-    console.log(data);
     createEdit(data, {
       onSuccess: () => {
         onCloseModal?.();

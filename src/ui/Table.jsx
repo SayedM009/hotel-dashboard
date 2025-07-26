@@ -47,6 +47,22 @@ const StyledRow = styled(CommonRow)`
 
 const StyledBody = styled.section`
   margin: 0.4rem 0;
+  min-height: 450px;
+  max-height: 450px;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 12px;
+    background-color: var(--color-grey-50);
+  }
+  &::-webkit-scrollbar-track {
+    border-radius: 3px;
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: var(--color-brand-200);
+    border: 2px solid transparent;
+  }
 `;
 
 const Footer = styled.footer`
@@ -100,15 +116,18 @@ function Row({ children, index }) {
   );
 }
 
-function Body({ data, render }) {
+function Body({ data, render, noData }) {
+  const { heading, text } = noData
+    ? noData
+    : {
+        heading: "No Data found",
+        text: "Something went wrong try again!",
+      };
   if (!data.length)
     return (
       <Empty>
-        <h2>No Umrah Orders Found</h2>
-        <p>
-          Please add a new Umrah order to get started or change the filter
-          values.{" "}
-        </p>
+        <h2>{heading}</h2>
+        <p>{text}</p>
       </Empty>
     );
   return <StyledBody>{data.map(render)}</StyledBody>;

@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 import StyledSelect from "../../ui/Select";
 import SortBy from "../../ui/SortBy";
 import useSortBy from "../../hooks/useSortBy";
+import useSlice from "../../hooks/useSlice";
 
 const SummaryTable = styled.div`
   display: grid;
@@ -119,16 +120,13 @@ const operations = [
 
 export default function UmrahTable() {
   const { umrahs, isFetching, error } = useGetUmrah();
+  const {
+    slicedObj: slicedUmrahs,
+    count,
+    handleChangeCount,
+  } = useSlice(umrahs);
+  const { sortedObj: sortedUmrahs } = useSortBy(slicedUmrahs, "totalPrice-asc");
 
-  const [showingCount, setShowingCount] = useState(5);
-
-  const showingUmrahs = useMemo(
-    () => umrahs?.slice(0, showingCount),
-    [umrahs, showingCount]
-  );
-  const { sortedObj: sortedUmrahs } = useSortBy(showingUmrahs);
-
-  if (error) return <div>Somthing went wrong!?</div>;
   return (
     <>
       {/* Filters */}
@@ -168,13 +166,7 @@ export default function UmrahTable() {
           />
         )}
       </Table>
-      <StyledSelect
-        value={showingCount}
-        onChange={(e) => {
-          setShowingCount(+e.target.value);
-        }}
-        type="white"
-      >
+      <StyledSelect value={count} onChange={handleChangeCount} type="white">
         <option value="5">5</option>
         <option value="10">10</option>
         <option value="20">20</option>

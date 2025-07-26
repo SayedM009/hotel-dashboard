@@ -13,6 +13,8 @@ import { useTranslation } from "react-i18next";
 import Table from "../../ui/Table";
 import useSortBy from "../../hooks/useSortBy";
 import SortBy from "../../ui/SortBy";
+import useSlice from "../../hooks/useSlice";
+import StyledSelect from "../../ui/Select";
 
 const StyledLink = styled(Link)`
   width: 100%;
@@ -21,15 +23,14 @@ const StyledLink = styled(Link)`
 
 export default function CabinTable() {
   const { t } = useTranslation();
-  const { cabins, isLoading, isFetching, error } = useGetCabins();
+  const { cabins, isFetching, error } = useGetCabins();
+  const {
+    slicedObj: slicedCabins,
+    count,
+    handleChangeCount,
+  } = useSlice(cabins);
+  const { sortedObj: sortedCabins } = useSortBy(slicedCabins, "discount-asc");
 
-  {
-    isFetching && !isLoading && <Spinner />;
-  }
-
-  const { sortedObj: sortedCabins } = useSortBy(cabins);
-
-  console.log(sortedCabins);
   if (error) return <div>Somthing went wrong!?</div>;
   return (
     <>
@@ -55,10 +56,25 @@ export default function CabinTable() {
           <div>{t("Pages.cabins.discount")}</div>
           <div>{t("Pages.cabins.actions")}</div>
         </Table.Header>
-        {sortedCabins?.map((cabin, index) => (
-          <CabinRow cabin={cabin} key={cabin.id} index={index} />
-        ))}
+        {isFetching && <Spinner />}
+        {!isFetching && (
+          <Table.Body
+            data={sortedCabins}
+            render={(cabin, index) => (
+              <CabinRow cabin={cabin} key={cabin.id} index={index} />
+            )}
+          />
+        )}
       </Table>
+
+      <StyledSelect value={count} onChange={handleChangeCount} type="white">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+      </StyledSelect>
 
       <Modal>
         <Modal.Open opens="cabin-form">
