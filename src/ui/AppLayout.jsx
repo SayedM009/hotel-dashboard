@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Spinner from "./Spinner";
 import Header from "./Header";
 import SideBar from "./SideBar";
+import ProductedRoute from "./Producted";
 
 const StyledAppLayout = styled.div`
   display: grid;
@@ -22,11 +23,13 @@ function AppLayout() {
   return (
     <StyledAppLayout>
       <Suspense fallback={<Spinner />}>
-        <Header />
-        <SideBar />
-        <StyledMain>
-          <Outlet />
-        </StyledMain>
+        <ProductedRoute>
+          <Header />
+          <SideBar />
+          <StyledMain>
+            <Outlet />
+          </StyledMain>
+        </ProductedRoute>
       </Suspense>
     </StyledAppLayout>
   );

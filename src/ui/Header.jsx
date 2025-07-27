@@ -3,6 +3,7 @@ import Row from "./Row";
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
 import { PiTranslate } from "react-icons/pi";
+import Logout from "../features/authentication/Logout";
 
 const StyledHeader = styled.header`
   background-color: var(--color-grey-0);
@@ -14,7 +15,9 @@ export default function Header() {
     <StyledHeader>
       <Row type="horizontal">
         <h1>Header</h1>
-        <LanguageSwitcher />
+        <Row type="horizontal">
+          <LanguageSwitcher /> <Logout />
+        </Row>
       </Row>
     </StyledHeader>
   );
@@ -25,7 +28,7 @@ function LanguageSwitcher() {
   const currentLanguage = localStorage.getItem("i18nextLng");
 
   return (
-    <div>
+    <Row>
       {currentLanguage == "ar" && (
         <Button onClick={() => i18n.changeLanguage("en")}>
           <PiTranslate />
@@ -39,6 +42,6 @@ function LanguageSwitcher() {
           العربية
         </Button>
       )}
-    </div>
+    </Row>
   );
 }

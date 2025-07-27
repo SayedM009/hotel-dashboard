@@ -3,7 +3,6 @@ import { formatCurrency } from "../../utils/helpers";
 import { useState } from "react";
 import { formatDate } from "../../utils/helpers";
 import {
-  PiExclamationMarkBold,
   PiListBold,
   PiXBold,
   PiPenBold,
