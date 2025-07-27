@@ -1,10 +1,10 @@
 import ButtonIcon from "../../ui/ButtonIcon";
 import { PiSignOut } from "react-icons/pi";
 import useLogout from "./useLogout";
-import Spinner from "../../ui/Spinner";
+import SpinnerMini from "../../ui/SpinnerMini";
 
 function Logout() {
-  const { logout, isLoading } = useLogout();
+  const { logout, isPending: isLoading } = useLogout();
   return (
     <ButtonIcon
       title="Logout"
@@ -13,7 +13,7 @@ function Logout() {
         logout();
       }}
     >
-      {isLoading ? <Spinner /> : <PiSignOut />}
+      {isLoading ? <SpinnerMini /> : <PiSignOut />}
     </ButtonIcon>
   );
 }

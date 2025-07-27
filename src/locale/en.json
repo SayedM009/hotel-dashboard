@@ -64,6 +64,17 @@
       "service_payment_status_required": "Service paymet status is required",
       "travelDate": "Travel Date",
       "travel_date_required": "Travel Date is required"
+    },
+    "users": {
+      "fullName": "Full name",
+      "fullName_required": "Full name is required",
+      "email": "Email",
+      "email_required": "Email is required",
+      "email_not_valid": "Email should be valid",
+      "password": "Password \\(8 Characters\\)",
+      "password_required": "Password is required and must be at least 8 characters",
+      "passwordConfirm": "Password confirmation",
+      "passwordConfirm_required": "Password confirmation is required"
     }
   }
 }

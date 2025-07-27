@@ -21,6 +21,7 @@ const FullPage = styled.div`
 function ProductedRoute({ children }) {
   // 1. Importing the useGetUser hook to get user data and authentication status
   const { user, isLoading, Authenticated } = useGetUser();
+
   const navigate = useNavigate();
 
   useEffect(() => {
