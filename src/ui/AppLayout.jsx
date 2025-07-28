@@ -5,6 +5,7 @@ import Spinner from "./Spinner";
 import Header from "./Header";
 import SideBar from "./SideBar";
 import ProductedRoute from "./Producted";
+import DarkModeProvider from "../context/DarkModeContext";
 
 const StyledAppLayout = styled.div`
   display: grid;
@@ -21,17 +22,19 @@ const StyledMain = styled.main`
 
 function AppLayout() {
   return (
-    <StyledAppLayout>
-      <Suspense fallback={<Spinner />}>
-        <ProductedRoute>
-          <Header />
-          <SideBar />
-          <StyledMain>
-            <Outlet />
-          </StyledMain>
-        </ProductedRoute>
-      </Suspense>
-    </StyledAppLayout>
+    <DarkModeProvider>
+      <StyledAppLayout>
+        <Suspense fallback={<Spinner />}>
+          <ProductedRoute>
+            <Header />
+            <SideBar />
+            <StyledMain>
+              <Outlet />
+            </StyledMain>
+          </ProductedRoute>
+        </Suspense>
+      </StyledAppLayout>
+    </DarkModeProvider>
   );
 }
 
