@@ -1,20 +1,36 @@
-import ButtonIcon from "../../ui/ButtonIcon";
 import { PiSignOut } from "react-icons/pi";
 import useLogout from "./useLogout";
-import SpinnerMini from "../../ui/SpinnerMini";
+import Spinner from "../../ui/Spinner";
+import styled from "styled-components";
+
+const StyledLogout = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  & svg {
+    color: var(--color-grey-900);
+  }
+`;
 
 function Logout() {
   const { logout, isPending: isLoading } = useLogout();
   return (
-    <ButtonIcon
-      title="Logout"
-      onClick={() => {
-        console.log("logout");
-        logout();
-      }}
-    >
-      {isLoading ? <SpinnerMini /> : <PiSignOut />}
-    </ButtonIcon>
+    <>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <StyledLogout
+          title="Logout"
+          onClick={() => {
+            console.log("logout");
+            logout();
+          }}
+        >
+          <PiSignOut /> <span>Logout</span>
+        </StyledLogout>
+      )}
+    </>
   );
 }
 

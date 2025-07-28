@@ -6,7 +6,6 @@ function useHandleOutsideClick(callBack) {
   useEffect(() => {
     function handleOutsideClick(e) {
       if (ref.current && !ref.current.contains(e.target)) {
-        console.log(ref.current);
         callBack();
       }
     }

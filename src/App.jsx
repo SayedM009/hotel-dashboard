@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
+import DarkModeProvider from "./context/DarkModeContext";
 // Lazy load components
 const AppLayout = lazy(() => import("./ui/AppLayout"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -108,12 +109,14 @@ function App() {
   }, [i18n.language]);
 
   return (
-    <QueryClientProvider client={queryCleint}>
-      <ReactQueryDevtools initialIsOpen={false} />
-      <GlobalStyles />
-      <RouterProvider router={router} />
-      <Toaster position="top-center" />
-    </QueryClientProvider>
+    <DarkModeProvider>
+      <QueryClientProvider client={queryCleint}>
+        <ReactQueryDevtools initialIsOpen={false} />
+        <GlobalStyles />
+        <RouterProvider router={router} />
+        <Toaster position="top-center" />
+      </QueryClientProvider>
+    </DarkModeProvider>
   );
 }
 

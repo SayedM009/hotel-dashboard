@@ -1,4 +1,3 @@
-import { addDays } from "date-fns";
 import supabase from "./supabase";
 export async function login({ email, password }) {
   let { data, error } = await supabase.auth.signInWithPassword({
@@ -29,21 +28,67 @@ export async function logout() {
   const { error } = await supabase.auth.signOut();
   if (error) throw new Error(error.message);
 }
-// const APIKEY =
-//   "c92e21e1a490977e17765e866f6c140f5cc8a4174e7468a06b817d09f82a6766";
-// export async function getLiveMatches() {
-//   try {
-//     const res = await fetch(
-//       `https://apiv3.apifootball.com/?action=get_events&from=2025-07-27&to=2025-07-27&APIkey=${APIKEY}`
-//     );
 
-//     const data = await res.json();
-//     console.log(
-//       data.filter((match) => match.match_live === "1" && match.country_id == 62)
-//     );
-//   } catch (error) {
-//     console.error(error.message);
-//   }
-// }
+export async function signUp() {
+  const { data, error } = await supabase.auth.signUp({
+    email: "test@test.com",
+    password: "123456",
+    options: {
+      data: {
+        fullName: "sayed",
+        avatar: "",
+      },
+    },
+  });
 
-// getLiveMatches();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function updateUser({ fullName, avatar, password }) {
+  // 1. Update Password or Full Name
+  let updatedUser;
+  if (password) updatedUser = { password };
+  if (fullName) updatedUser = { data: { fullName } };
+
+  const { data, error } = await supabase.auth.updateUser(updatedUser);
+
+  if (error) throw new Error(error.message);
+
+  if (!avatar) return data;
+
+  // 2. Remove old avatar if was exsits
+  if (data && data.user.user_metadata.avatar) {
+    const oldAvatarName = data.user.user_metadata.avatar.replace(
+      "https://tqawvmzchgqpgyarqnmq.supabase.co/storage/v1/object/public/avatars/",
+      ""
+    );
+
+    const { error: errorDeleteAvatar } = await supabase.storage
+      .from("avatars")
+      .remove([`${oldAvatarName}`]);
+
+    if (errorDeleteAvatar) throw new Error(errorDeleteAvatar.message);
+  }
+
+  // 3. Create new avatar name and upload it
+  const fileName = `avatar-${data.user.id}-${Math.random()}`;
+
+  const { error: storgError } = await supabase.storage
+    .from("avatars")
+    .upload(fileName, avatar);
+
+  if (storgError) throw new Error(storgError.message);
+
+  // 4. Update the user
+  const { data: updatedData, error: updatedError } =
+    await supabase.auth.updateUser({
+      data: {
+        avatar: `https://tqawvmzchgqpgyarqnmq.supabase.co/storage/v1/object/public/avatars/${fileName}`,
+      },
+    });
+
+  if (updatedError) throw new Error(updatedError.message);
+
+  return updatedData;
+}

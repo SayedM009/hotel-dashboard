@@ -56,14 +56,14 @@ const StyledTab = styled.button`
 
   &:hover {
     background-color: var(--color-green-700);
-    color: white;
+    color: var(--color-grey-0);
   }
 
   ${(props) =>
     props.type === "active" &&
     css`
       background-color: var(--color-green-700);
-      color: white;
+      color: var(--color-grey-0);
     `}
 
   ${(props) =>
@@ -82,6 +82,7 @@ const StyledInputDate = styled.input`
     outline: none;
     border-color: var(--color-green-700);
   }
+  color: var(--color-grey-0);
 `;
 
 const columns = `minmax(50px, 0.3fr) /* NO. */

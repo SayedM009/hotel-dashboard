@@ -10,11 +10,10 @@ function useLogin() {
     mutationFn: (data) => loginAPI(data),
     onSuccess: (user) => {
       queryClient.setQueryData(["user"], user.user);
-      navigate("/dashboard", { replace: true });
       toast.success("Welcome Back " + user.user.email);
+      navigate("/dashboard", { replace: true });
     },
-    onError: () =>
-      toast.error("Faild to login. Email or password is incorrect try again"),
+    onError: (error) => toast.error(error.message),
   });
   return { login, isPending };
 }
