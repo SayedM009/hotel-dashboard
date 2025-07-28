@@ -2,9 +2,8 @@ import styled from "styled-components";
 import Row from "./Row";
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
-import { PiTranslate } from "react-icons/pi";
-import Logout from "../features/authentication/Logout";
-
+import { PiTranslate, PiUser } from "react-icons/pi";
+import UserAvatar from "../features/authentication/UserAvatar";
 const StyledHeader = styled.header`
   background-color: var(--color-grey-0);
   padding: 0.5rem 1.5rem;
@@ -16,7 +15,8 @@ export default function Header() {
       <Row type="horizontal">
         <h1>Header</h1>
         <Row type="horizontal">
-          <LanguageSwitcher /> <Logout />
+          <UserAvatar />
+          <LanguageSwitcher />
         </Row>
       </Row>
     </StyledHeader>
